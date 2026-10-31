@@ -13,7 +13,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "verify": "node scripts/verify-build.mjs",
-    "generate:og": "node scripts/generate-og.mjs"
+    "generate:og": "node scripts/generate-og.mjs",
+    "cf:check": "pnpm check && pnpm build && pnpm verify && wrangler deploy --dry-run",
+    "cf:preview": "wrangler dev --local --ip 127.0.0.1 --port 8787",
+    "cf:deploy": "pnpm cf:check && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",

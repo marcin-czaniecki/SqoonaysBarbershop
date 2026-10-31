@@ -37,6 +37,7 @@ if (canonical) {
   assert.ok(robots.includes(`Sitemap: ${new URL('sitemap-index.xml', origin).href}`));
   const sitemap = await readFile('dist/sitemap-0.xml', 'utf8');
   assert.ok(sitemap.includes(origin.href));
+  assert.equal(sitemap.includes('/404'), false, '404 page excluded from sitemap');
   assert.equal(robots.includes('Disallow: /'), false);
 } else {
   assert.match(html, /content="noindex, nofollow"/);
@@ -51,4 +52,8 @@ const png = await readFile('dist/og.png');
 assert.equal(png.subarray(1, 4).toString(), 'PNG');
 assert.equal(png.readUInt32BE(16), 1200);
 assert.equal(png.readUInt32BE(20), 630);
+const notFound = await readFile('dist/404.html', 'utf8');
+assert.match(notFound, /content="noindex, nofollow"/);
+assert.match(notFound, /href="\/"/);
+await access('dist/_headers');
 console.log(`Build verified: Polish page, H1, anchors, local assets, booking links, JSON-LD, OG, ${canonical ? 'production canonical and sitemap' : 'noindex without domain'}.`);

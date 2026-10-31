@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BookingLink from '../components/BookingLink.astro';
+---
+<Layout title="Nie znaleziono strony | Sqoonay’s Barbershop" noindex>
+  <main id="tresc" class="error-page container" tabindex="-1">
+    <a href="/" class="wordmark" aria-label="Sqoonay’s Barbershop — strona główna">Sqoonay’s<span>BARBERSHOP · GDYNIA</span></a>
+    <p class="eyebrow">BŁĄD 404</p>
+    <h1>Tu nie ma<br />tej strony.</h1>
+    <p>Sprawdź adres lub wróć na stronę główną salonu.</p>
+    <div class="hero-actions"><a href="/" class="button button--dark">Wróć na stronę główną</a><BookingLink variant="gold" /></div>
+  </main>
+</Layout>
+<style>
+  .error-page { min-height: 100svh; padding-block: 3rem; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+  .error-page .wordmark { margin-bottom: 3rem; }
+  .error-page h1 { font-size: clamp(3.5rem, 10vw, 7rem); }
+  .error-page > p:not(.eyebrow) { font-size: .9rem; line-height: 1.8; }
+  :global(body:has(.error-page)) { padding-bottom: 0; }
+</style>

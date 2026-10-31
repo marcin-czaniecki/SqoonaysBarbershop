@@ -37,7 +37,10 @@ TypeScript 6 jest celowo zgodny z zakresem wspieranym przez `@astrojs/check`; Ty
 | `scripts/robots.mjs` | Generuje statyczny robots.txt po buildzie; nie jest endpointem |
 | `scripts/verify-build.mjs` | Kontrola semantyki, linków, lokalnych assetów i SEO wygenerowanego HTML |
 | `public/og.svg`, `public/og.png` | Edytowalna wizytówka typograficzna i zgodny z social media PNG 1200×630 |
-| `wrangler.example.jsonc` | Przykład późniejszego hostingu statycznego na Cloudflare Workers |
+| `wrangler.jsonc` | Gotowa konfiguracja Cloudflare Workers Static Assets, bez kodu Workera |
+| `public/_headers` | Nagłówki odpowiedzi i cache dla plików z hashem |
+| `src/pages/404.astro` | Własna strona błędu 404 |
+| `docs/CLOUDFLARE.md` | Podłączenie GitHub → Workers Builds, lokalny podgląd i ręczny deploy |
 
 ### Zdjęcia
 
@@ -83,16 +86,21 @@ Przeglądanie strony nie ładuje Booksy ani Instagrama. Linki otwierają się w 
 
 Menu mobilne i rozwinięcie cennika wykorzystują natywne `details/summary`. Mały skrypt zamyka menu po wybraniu kotwicy, kliknięciu poza menu lub Escape. Strona ma skip link, widoczny focus, semantyczne sekcje, obsługę reduced motion i dolne CTA z zarezerwowanym miejscem w dokumencie. Wszystkie informacje i rezerwacje działają bez JavaScriptu.
 
-## Późniejsze wdrożenie — Cloudflare Workers Static Assets
+## Cloudflare Workers Static Assets i GitHub
 
 **W tej sesji niczego nie opublikowano. Nie uruchamiaj poleceń wdrożenia bez zgody właściciela.** Nie potrzeba adaptera SSR, API ani kodu Workera.
 
-1. Zatwierdź dane, zdjęcia i domenę. Ustaw `SITE_URL` w środowisku budowania.
-2. Wykonaj `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm build`, `pnpm verify`.
-3. Po akceptacji wdrożenia skopiuj `wrangler.example.jsonc` do `wrangler.jsonc`; sprawdź nazwę projektu i konto. `assets.directory` wskazuje `./dist`; brak SSR i bazy.
-4. Dopiero wtedy uruchom ręcznie `pnpm dlx wrangler@latest login` i `pnpm dlx wrangler@latest deploy`. Te komendy **nie zostały wykonane**. Domena i DNS to osobny zatwierdzony krok w panelu Cloudflare.
-5. Dla Cloudflare Builds ustaw komendę `pnpm install --frozen-lockfile && pnpm check && pnpm build && pnpm verify`, zmienną `SITE_URL` i wdrożenie `pnpm dlx wrangler@latest deploy`. Nie włączaj automatycznej publikacji przed akceptacją.
-6. Po publikacji sprawdź HTTPS, przekierowanie wariantów domeny na jeden adres, favicon, OG PNG, robots.txt, sitemap i odpowiedź 404 dla nieistniejącego adresu. Sprawdź zachowanie polityk cache i logów hostingu.
+Repozytorium jest przygotowane do połączenia z **Cloudflare Workers Builds**, które pobiera kod bezpośrednio z GitHub. Po świadomym włączeniu integracji push do wybranej gałęzi uruchamia build i publikację. Nie potrzeba GitHub Actions, adaptera Cloudflare do Astro, własnego backendu ani ręcznego wysyłania `dist` do GitHub.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm cf:check    # Astro check + build + verify + Wrangler dry-run, bez publikacji
+pnpm cf:preview  # Lokalna emulacja Cloudflare: http://127.0.0.1:8787
+```
+
+Ustawienia Workers Builds: root katalog główny repozytorium, build `pnpm cf:check`, deploy `pnpm exec wrangler deploy`, nazwa Workera `sqoonays-barbershop`. Node jest wskazany w `.node-version`, pnpm w `packageManager`. Przed produkcją ustaw **build variable** `SITE_URL` na zatwierdzoną domenę HTTPS. Bez niej build pozostaje `noindex`.
+
+Pełna instrukcja krok po kroku, w tym GitHub oraz alternatywny ręczny deploy: [docs/CLOUDFLARE.md](docs/CLOUDFLARE.md). Zainstalowano lokalny, przypięty Wrangler; `pnpm cf:deploy` jest komendą faktycznie publikującą i nie została uruchomiona.
 
 Oficjalne instrukcje: [Astro — instalacja](https://docs.astro.build/en/install-and-setup/), [Tailwind 4](https://docs.astro.build/en/guides/styling/#tailwind), [sitemap](https://docs.astro.build/en/guides/integrations-guide/sitemap/), [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/get-started/).
 

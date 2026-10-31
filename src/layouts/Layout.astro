@@ -4,8 +4,10 @@ import '@fontsource/barlow-condensed/latin-ext-600.css';
 import '@fontsource/barlow-condensed/latin-600.css';
 import '../styles/global.css';
 
+interface Props { title?: string; noindex?: boolean; }
+const { title = business.seo.title, noindex = false } = Astro.props;
 const site = Astro.site;
-const canonical = site ? new URL(Astro.url.pathname, site).href : undefined;
+const canonical = site && !noindex ? new URL(Astro.url.pathname, site).href : undefined;
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'HairSalon',
@@ -27,17 +29,17 @@ const structuredData = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{business.seo.title}</title>
+    <title>{title}</title>
     <meta name="description" content={business.seo.description} />
     <meta name="theme-color" content="#f1eee8" />
-    <meta name="robots" content={site ? 'index, follow' : 'noindex, nofollow'} />
+    <meta name="robots" content={site && !noindex ? 'index, follow' : 'noindex, nofollow'} />
     {canonical && <link rel="canonical" href={canonical} />}
     {site && <link rel="sitemap" href="/sitemap-index.xml" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pl_PL" />
     <meta property="og:site_name" content={business.name} />
-    <meta property="og:title" content={business.seo.title} />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={business.seo.description} />
     {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={site ? new URL('/og.png', site).href : '/og.png'} />
@@ -45,10 +47,10 @@ const structuredData = {
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Sqoonay’s Barbershop — Gdynia, Mylna 1. Typograficzna wizytówka salonu." />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={business.seo.title} />
+    <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={business.seo.description} />
     <meta name="twitter:image" content={site ? new URL('/og.png', site).href : '/og.png'} />
-    <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />
+    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />}
   </head>
   <body id="start"><a href="#tresc" class="skip-link">Przejdź do treści</a><slot /></body>
 </html>

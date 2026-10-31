@@ -50,3 +50,17 @@ Ograniczenie przeglądarki opisane powyżej pozostaje aktualne: kadry na mobile 
 Na wyraźne życzenie użytkownika dodano mapę Google bezpośrednio pod adresem w sekcji Kontakt. Komponent `GoogleMap.astro` zawiera responsywny iframe o stałej wysokości 280 px, z polskim tytułem, lazy loading i `referrerpolicy="no-referrer"`. Adres osadzenia jest w typowanych danych firmy, bez klucza API. Zachowano link wyznaczania trasy. Mapa ładuje się bez dodatkowego kliknięcia; połączenie z Google i konsekwencje dla prywatności opisano w README.
 
 `Invoke-WebRequest` do źródła mapy: HTTP 200, odpowiedź HTML zawiera adres Mylna, bez nagłówka X-Frame-Options blokującego iframe. `pnpm check`: 24 pliki, 0 błędów/ostrzeżeń/wskazówek. `pnpm build` i `pnpm verify`: sukces. Kontrola wygenerowanego HTML potwierdziła src, title i lazy loading mapy. Nie dodano zależności. Poprzednie ograniczenie przeglądarki pozostaje: widok mapy oraz jej kadrowanie na mobile i desktopie wymagają ręcznego sprawdzenia. Położenie jest wyszukiwane po adresie ze SPEC.md, bez wymyślania współrzędnych ani identyfikatora wizytówki.
+
+## Aktualizacja — Cloudflare Workers Static Assets / GitHub
+
+Przygotowano `wrangler.jsonc`, lokalny Wrangler 4.156.0, komendy `cf:check`, `cf:preview`, `cf:deploy`, nagłówki `public/_headers`, własne `404.html` generowane przez Astro i instrukcję `docs/CLOUDFLARE.md`. `.node-version` wskazuje Node 24.22.1 obsługiwany przez Workers Builds; lokalne kontrole wykonywano na zainstalowanym Node 26.7.0 i pnpm 9.5.0. Git ma już remote `origin` do GitHub i gałąź `main`; nie modyfikowano zdalnego repozytorium.
+
+- `pnpm add -D wrangler`: sukces; lockfile zaktualizowany.
+- `pnpm install --frozen-lockfile`: sukces.
+- `pnpm cf:check`: sukces; check 25 plików bez błędów, ostrzeżeń i wskazówek; statyczny build dwóch stron; verify oraz `wrangler deploy --dry-run` zakończone sukcesem.
+- Dodatkowy build/verify z testowym `SITE_URL=https://sqoonays.example`: sukces, canonical i sitemap poprawne, 404 wykluczone z sitemap i zawsze noindex. Końcowy build przywrócono bez domeny.
+- `pnpm cf:preview`: lokalny runtime uruchomił się na 127.0.0.1:8787. Początkową datę zgodności 2026-10-31 poprawiono na **2026-10-30**, najnowszą obsługiwaną przez zainstalowany workerd.
+- Lokalne żądania HTTP potwierdziły: strona główna 200, nieistniejąca ścieżka 404 z własną treścią, CSS 200, `Cache-Control: public, max-age=31536000, immutable` dla pliku z hashem, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`.
+- `git diff --check`: kod 0. Lokalny serwer Cloudflare zatrzymano po kontroli.
+
+Nie uruchomiono `wrangler login`, właściwego deploya, połączenia kont GitHub/Cloudflare ani push do GitHub. Nie ma potwierdzenia builda w zdalnym Workers Builds — przygotowanie zweryfikowano lokalnie. Do ustalenia pozostają domena (`SITE_URL`), konto/projekt Cloudflare i biznesowe materiały wskazane w README. Automatyczne publikowanie zacznie działać dopiero po świadomym skonfigurowaniu integracji i wybraniu gałęzi w Cloudflare.
