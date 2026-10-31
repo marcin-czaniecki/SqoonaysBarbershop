@@ -1,0 +1,14 @@
+---
+import { business } from '../data/business';
+import Arrow from './Arrow.astro';
+---
+<section id="o-nas" class="section about container" aria-labelledby="about-title">
+  <p class="eyebrow section-index">01 / O NAS</p>
+  <div>
+    <h2 id="about-title">Lokalny adres.<br /><span class="serif-emphasis">Twój własny styl.</span></h2>
+    <div class="about-bottom">
+      <p>Jesteśmy Sqoonay’s Barbershop. Znajdziesz nas przy Mylnej 1 w Gdyni. Strzyżenie włosów, zadbanie o brodę lub jedno i drugie — wybierz usługę dla siebie i sprawdź dostępny termin w Booksy.</p>
+      <a href={business.links.instagram} class="text-link">Poznaj nas na Instagramie <Arrow diagonal /></a>
+    </div>
+  </div>
+</section>

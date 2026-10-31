@@ -1,0 +1,34 @@
+---
+import { navigation } from '../data/business';
+import BookingLink from './BookingLink.astro';
+---
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="#start" class="wordmark" aria-label="Sqoonay’s Barbershop — początek strony">Sqoonay’s<span>BARBERSHOP · GDYNIA</span></a>
+    <nav class="desktop-nav" aria-label="Nawigacja główna">
+      {navigation.map(({ href, label }) => <a href={href}>{label}</a>)}
+    </nav>
+    <BookingLink class="header-booking" />
+    <details class="mobile-menu">
+      <summary><span>Menu</span><span class="menu-symbol" aria-hidden="true"></span></summary>
+      <nav aria-label="Nawigacja mobilna">{navigation.map(({ href, label }) => <a href={href}>{label}<span aria-hidden="true">↗</span></a>)}</nav>
+    </details>
+  </div>
+</header>
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+  if (menu) {
+    menu.querySelectorAll<HTMLAnchorElement>('a').forEach((link) => {
+      link.addEventListener('click', () => { menu.open = false; });
+    });
+    document.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    });
+    document.addEventListener('click', (event: MouseEvent) => {
+      if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    });
+  }
+</script>

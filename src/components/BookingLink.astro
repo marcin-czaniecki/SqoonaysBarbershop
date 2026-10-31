@@ -1,0 +1,9 @@
+---
+import { business } from '../data/business';
+import Arrow from './Arrow.astro';
+interface Props { variant?: 'dark' | 'gold' | 'light'; class?: string; label?: string; }
+const { variant = 'dark', class: className = '', label = 'Umów wizytę' } = Astro.props;
+---
+<a href={business.links.booking} class:list={['button', `button--${variant}`, className]}>
+  <span>{label}<span class="sr-only"> przez Booksy</span></span><Arrow diagonal />
+</a>

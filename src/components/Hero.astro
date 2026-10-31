@@ -1,0 +1,21 @@
+---
+import { photos } from '../data/media';
+import BookingLink from './BookingLink.astro';
+import PhotoFrame from './PhotoFrame.astro';
+import Arrow from './Arrow.astro';
+---
+<section class="hero container" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="tiny-cross" aria-hidden="true">✳</span> GDYNIA, MYLNA 1</p>
+    <h1 id="hero-title">Strzyżenie<br />z <span>charakterem.</span></h1>
+    <p class="hero-description">Włosy. Broda. Twój styl.<br />Sqoonay’s Barbershop — poznaj nas na Mylnej.</p>
+    <div class="hero-actions"><BookingLink /><a href="#uslugi" class="text-link">Zobacz usługi <Arrow /></a></div>
+    <div class="hero-footnote"><span>BARBER SHOP</span><span>GDYNIA / POLSKA</span></div>
+  </div>
+  <div class="hero-visual">
+    <PhotoFrame label="Wnętrze salonu" class="hero-photo" photo={photos.hero} eager />
+    <span class="hero-side-note" aria-hidden="true">WŁOSY & BRODA — SQOONAY’S BARBERSHOP</span>
+    <div class="location-tag"><span aria-hidden="true">↗</span><span>Znajdziesz nas<br /><strong>Mylna 1, Gdynia</strong></span></div>
+  </div>
+</section>
+<div class="service-strip" aria-hidden="true"><div class="container"><span>STRZYŻENIE</span><i>✳</i><span>BRODA</span><i>✳</i><span>TWÓJ STYL</span><i>✳</i><span>GDYNIA</span></div></div>

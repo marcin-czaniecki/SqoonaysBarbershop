@@ -1,0 +1,15 @@
+---
+import { business } from '../data/business';
+---
+<figure class="contact-map">
+  <iframe
+    src={business.links.mapEmbed}
+    title={`Mapa Google — ${business.address.street}, ${business.address.city}`}
+    width="600"
+    height="280"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+    allowfullscreen
+  ></iframe>
+  <figcaption>Mapa Google · {business.address.street}, {business.address.city}</figcaption>
+</figure>

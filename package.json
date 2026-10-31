@@ -1,0 +1,32 @@
+{
+  "name": "sqoonays-barbershop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.5.0",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro check",
+    "build": "astro build",
+    "preview": "astro preview",
+    "verify": "node scripts/verify-build.mjs",
+    "generate:og": "node scripts/generate-og.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource-variable/manrope": "5.3.0",
+    "@fontsource/barlow-condensed": "5.3.0",
+    "astro": "7.4.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@tailwindcss/vite": "4",
+    "tailwindcss": "4",
+    "typescript": "6.0.3",
+    "vite": "8",
+    "wrangler": "4.156.0"
+  }
+}

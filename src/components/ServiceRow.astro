@@ -1,0 +1,12 @@
+---
+import type { Service } from '../data/services';
+import { formatPrice } from '../data/services';
+interface Props { service: Service; index: number; }
+const { service, index } = Astro.props;
+---
+<li class="service-row">
+  <span class="service-number" aria-hidden="true">{String(index).padStart(2, '0')}</span>
+  <h3>{service.name}</h3>
+  <span class="service-duration"><span class="sr-only">Czas: </span>{service.durationMinutes} min</span>
+  <span class="service-price">{formatPrice(service.price)}</span>
+</li>
