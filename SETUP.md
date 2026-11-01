@@ -1,31 +1,53 @@
-# Szybki start Codex + Cursor na Windows 11
+# Uruchomienie istniejącego projektu
 
-1. Zainstaluj oficjalne rozszerzenie Codex w Cursor: https://developers.openai.com/codex/ide
-2. Otwórz panel Codex i wybierz `Sign in with ChatGPT`.
-3. W panelu Codex ustaw model `GPT-6.1 Sol` (jeśli dostępny), reasoning `High`, tryb `Local`, permission `Ask for approval`.
-4. W `Codex Settings > Open config.toml` ustaw (na poziomie użytkownika, zwykle `%USERPROFILE%\.codex\config.toml`):
+Aktualizacja: 01.11.2026. Projekt jest już zainicjalizowany; nie twórz ponownie repozytorium ani aplikacji Astro. Użyj bieżącego checkoutu.
 
-```toml
-model = "gpt-6.1-sol"
-model_reasoning_effort = "high"
-approval_policy = "on-request"
-sandbox_mode = "workspace-write"
-```
+## Wymagania
 
-5. W PowerShell otwórz docelowy katalog projektu:
+- Node wskazany w `.node-version`: **24.22.1**. `package.json` wymaga co najmniej 22.23.4; kontrole lokalne wykonywano również na 26.7.0.
+- pnpm **9.5.0**, zgodnie z `packageManager` w `package.json`.
+- Edytor jest dowolny. Ustawienia konta, modelu i uprawnień asystenta nie należą do konfiguracji strony.
+
+## PowerShell
 
 ```powershell
-mkdir sqoonays-barbershop
-cd sqoonays-barbershop
-git init
-cursor .
+Set-Location -LiteralPath "E:\Sqoonay's Barbershop"
+node --version
+pnpm --version
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-6. Skopiuj `AGENTS.md` oraz `SPEC.md` do katalogu głównego `sqoonays-barbershop`. `FIRST_PROMPT.md` zawiera instrukcję do wklejenia w panelu Codex. Możesz też skopiować `FIRST_PROMPT.md` do repozytorium jako notatkę.
-7. Uruchom nowy czat w panelu Codex (po umieszczeniu plików w repozytorium) i wklej treść `FIRST_PROMPT.md` bez nagłówka.
-8. Pozwól na uzasadnioną instalację zależności i kontroluj zmiany Git. Nie włączaj `Full access` bez powodu.
-9. Po implementacji sprawdź lokalnie `pnpm dev`, a następnie porównaj widok z wymaganiami w `SPEC.md`.
+Jeśli klon znajduje się gdzie indziej, zmień pierwszą ścieżkę. Otwórz adres podany w terminalu, zwykle `http://localhost:4321`. Zatrzymanie: Ctrl+C. Jeżeli `node` lub `pnpm` nie są rozpoznawane, dodaj katalog instalacji do PATH i otwórz ponownie terminal.
 
-Jeśli polecenie `cursor .` nie jest dostępne, otwórz folder ręcznie przez `File > Open Folder`.
+## Konfiguracja domeny
 
-Przy instalacji projektu w WSL2 trzymaj pliki w systemie Linux i uruchamiaj narzędzia w WSL; nie mieszaj środowisk bez potrzeby.
+Do lokalnego uruchomienia nie potrzebujesz `.env`. Domyślnie strona używa `https://sqoonays.pl` jako adresu kanonicznego.
+
+Opcjonalnie skopiuj `.env.example` do `.env`. `SITE_URL` nadpisuje domenę; `SITE_NOINDEX=true` blokuje indeksowanie kopii testowej. Na produkcji pozostaw `SITE_NOINDEX` nieustawione lub `false`. Zmiana tych wartości wymaga ponownego builda; w dev uruchom ponownie serwer. Nie commituj `.env` ani tokenów.
+
+## Kontrola przed przekazaniem zmian
+
+```sh
+pnpm cf:check
+pnpm cf:preview
+```
+
+`cf:check` uruchamia Astro/TypeScript, build, weryfikację plików i Wrangler **dry-run**. Nie publikuje strony. `cf:preview` udostępnia gotowe `dist/` na `http://127.0.0.1:8787`; po zmianach wykonaj ponowny build. Zatrzymanie: Ctrl+C.
+
+Sam build: `pnpm build`. Weryfikacja istniejącego builda: `pnpm verify`. Podgląd Astro bez emulacji Cloudflare: `pnpm preview`.
+
+W przeglądarce sprawdź widok 320/390/768/1440 px, menu, cennik, focus, Booksy i mapę po przewinięciu do adresu. Instrukcja treści: [docs/CONTENT.md](docs/CONTENT.md). Wdrożenie i konfiguracja GitHub: [docs/CLOUDFLARE.md](docs/CLOUDFLARE.md).
+
+## Gdy dev zgłasza timeout modułu Astro
+
+Jeżeli po komunikacie „ready” pojawi się `Failed to create the dev server app` / `vite:invoke` z timeoutem dla `virtual:astro:manifest`, zatrzymaj zawieszoną instancję i uruchom serwer ponownie:
+
+```sh
+pnpm exec astro dev stop
+pnpm dev
+```
+
+Następnie odśwież `http://localhost:4321/#opinie`. Pierwsza komenda zatrzymuje instancję Astro przypisaną do tego repozytorium; nie zabija pozostałych procesów Node. Jeśli masz dostęp do terminala działającego serwera, możesz zatrzymać go przez Ctrl+C.
+
+W kontroli 01.11.2026 restart przywrócił odpowiedzi strony i zasobów oraz odświeżanie po zmianie komponentu. Dokładnej przyczyny pierwszego timeoutu nie odtworzono. Jeżeli błąd wróci, zachowaj pełny log i wersje z `node --version` / `pnpm --version`.

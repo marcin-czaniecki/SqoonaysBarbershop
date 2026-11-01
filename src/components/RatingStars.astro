@@ -1,0 +1,12 @@
+---
+import Icon from './Icon.astro';
+
+interface Props { value: number; }
+const { value } = Astro.props;
+const valid = Number.isFinite(value) && value >= 1 && value <= 5;
+const label = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 1 }).format(value);
+---
+{valid && <span class="rating-stars" role="img" aria-label={`Ocena ${label} na 5`}>
+  <span class="rating-stars-track">{Array.from({ length: 5 }, () => <Icon name="star" size={20} />)}</span>
+  <span class="rating-stars-fill" style={`width: ${value / 5 * 100}%`}>{Array.from({ length: 5 }, () => <Icon name="star" size={20} />)}</span>
+</span>}

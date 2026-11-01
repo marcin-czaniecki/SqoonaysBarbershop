@@ -65,7 +65,7 @@ h2 .serif-emphasis { font-size: .91em; }
 .header-booking { min-height: 46px; padding: .8rem 1rem; gap: 1.3rem; font-size: .7rem; }
 .mobile-menu { display: none; }
 
-/* Typographic hero; abstract composition is visibly a photo placeholder. */
+/* Typographic hero with a locally served salon photograph. */
 .hero { display: grid; grid-template-columns: 1.13fr 1fr; gap: clamp(2rem, 5vw, 5rem); padding-block: 4rem 4.5rem; }
 .hero-copy { padding-top: .85rem; display: flex; flex-direction: column; align-items: flex-start; }
 .hero .eyebrow { display: flex; gap: .65rem; align-items: center; }
@@ -157,6 +157,64 @@ details[open] > summary .when-closed { display: none; }
 .gallery-grid figcaption a { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; margin-top: -.8rem; }
 .gallery-grid figcaption a:hover { text-decoration: underline; }
 
+/* Reviews: independent profile card, with no placeholder ratings or quotes. */
+.reviews-layout { display: grid; grid-template-columns: 1.12fr 1fr; gap: clamp(3rem, 7vw, 7rem); align-items: center; }
+.reviews-copy .eyebrow { margin-bottom: 1.4rem; }
+.reviews-copy h2 { margin-bottom: 1.6rem; }
+.reviews-intro { max-width: 28rem; font-size: .84rem; line-height: 1.95; color: var(--muted); }
+.reviews-write { margin-top: 2rem; }
+.reviews-signin { margin-top: .8rem; font-size: .64rem; line-height: 1.7; color: var(--muted); }
+.reviews-profile { min-width: 0; padding: clamp(1.5rem, 3.4vw, 3rem); background: #e7e2d9; border: 1px solid var(--line); border-top: 3px solid #9d7a45; }
+.reviews-profile-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.6rem; }
+.reviews-profile-top .icon { color: #84663d; }
+.reviews-google { font-size: .875rem; line-height: 1.5; font-weight: 400; font-style: normal; letter-spacing: normal; white-space: nowrap; color: #1f1f1f; }
+.reviews-profile h3 { font-family: var(--font-display); font-size: clamp(2rem, 3.4vw, 2.8rem); line-height: 1.1; font-weight: 600; }
+.reviews-address { margin-top: .7rem; color: var(--muted); font-size: .72rem; line-height: 1.7; }
+.reviews-profile-content { margin-top: 1.7rem; padding-top: 1.7rem; border-top: 1px solid #c3bbae; }
+.reviews-profile-content h4 { font-size: 1.05rem; line-height: 1.6; font-weight: 600; }
+.reviews-profile-content > p { margin-top: .7rem; max-width: 24rem; color: var(--muted); font-size: .76rem; line-height: 1.9; }
+.reviews-read { display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 54px; margin-top: 1.7rem; padding: .9rem 1.15rem; border: 1px solid var(--color-ink); font-size: .76rem; font-weight: 700; transition: background .2s, color .2s; }
+.reviews-read:hover { background: var(--color-ink); color: var(--color-paper); }
+.reviews-bottom { display: flex; justify-content: space-between; align-items: center; gap: 1rem 2rem; flex-wrap: wrap; border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1.5rem; }
+.reviews-bottom > p { color: var(--muted); font-size: .72rem; line-height: 1.8; }
+.reviews-summary { display: flex; align-items: center; gap: 1.2rem; }
+.reviews-average { font-family: var(--font-display); font-size: 4rem; font-weight: 600; line-height: 1; }
+.reviews-summary p { margin-top: .35rem; font-size: .7rem; line-height: 1.6; }
+.reviews-summary p span { color: var(--muted); }
+.reviews-profile-content .reviews-selection, .reviews-profile-content .reviews-updated { font-size: .65rem; }
+.rating-stars { position: relative; display: inline-block; width: 100px; height: 20px; vertical-align: middle; }
+.rating-stars-track, .rating-stars-fill { display: flex; width: 100px; height: 20px; }
+.rating-stars-track { color: #c3bbae; }
+.rating-stars-fill { position: absolute; top: 0; left: 0; max-width: 100%; overflow: hidden; color: #84663d; }
+.reviews-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+.review { min-width: 0; padding: 1.7rem; border: 1px solid var(--line); }
+.review blockquote { margin: 1.2rem 0 1.6rem; font-size: .82rem; line-height: 1.9; overflow-wrap: anywhere; }
+.review figcaption { display: flex; flex-direction: column; align-items: flex-start; gap: .4rem; }
+.review-author { display: inline-flex; align-items: center; gap: .65rem; max-width: 100%; overflow-wrap: anywhere; font-size: .75rem; font-weight: 700; }
+.review-author img { width: 32px; height: 32px; border-radius: 50%; }
+.review-translation { font-size: .65rem; line-height: 1.7; color: var(--muted); margin-bottom: 1rem; }
+.review-author:hover { text-decoration: underline; }
+.review time { font-size: .65rem; color: var(--muted); }
+.review .text-link { margin-top: .3rem; font-size: .65rem; gap: .6rem; }
+@media (max-width: 899px) {
+  .reviews-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+  .reviews-intro { max-width: 34rem; }
+  .reviews-list { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 599px) {
+  .reviews-copy h2 { margin-bottom: 1.4rem; }
+  .reviews-intro { font-size: .8rem; }
+  .reviews-write { width: 100%; margin-top: 1.5rem; }
+  .reviews-signin { font-size: .61rem; }
+  .reviews-profile { padding: 1.5rem; }
+  .reviews-profile-content { margin-top: 1.4rem; padding-top: 1.4rem; }
+  .reviews-profile-content h4 { font-size: 1rem; }
+  .reviews-profile-content > p { font-size: .72rem; }
+  .reviews-bottom { align-items: flex-start; flex-direction: column; gap: .4rem; margin-top: 2rem; }
+  .reviews-bottom > p { font-size: .65rem; }
+  .reviews-list { grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+}
+
 /* Address and footer. */
 .contact { background: #c9ac7d; }
 .contact-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 6rem; }
@@ -178,7 +236,7 @@ details[open] > summary .when-closed { display: none; }
 .footer-top { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-block: 3.5rem; }
 .footer-top > p { font-size: .72rem; color: #bfbab0; }
 .footer-bottom { border-top: 1px solid #4b4c45; padding-block: 1.5rem; display: flex; justify-content: space-between; gap: 2rem; color: #bfbab0; font-size: .56rem; }
-.footer-bottom > div { display: flex; gap: 1.8rem; }
+.footer-bottom > div { display: flex; gap: .8rem 1.8rem; flex-wrap: wrap; }
 .footer-bottom > div a { display: inline-flex; align-items: center; gap: .3rem; }
 .footer-bottom a:hover { color: var(--color-paper); text-decoration: underline; }
 .mobile-booking { display: none; }

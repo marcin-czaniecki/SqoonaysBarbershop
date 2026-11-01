@@ -1,83 +1,51 @@
-# GitHub → Cloudflare Workers Static Assets
+# GitHub i Cloudflare Workers Static Assets
 
-Projekt jest gotowy do hostingu statycznego. Nie został jeszcze połączony z kontem Cloudflare ani opublikowany. Utworzenie aplikacji z integracją Git i pierwszym deployem jest etapem, który wykonujesz dopiero, gdy chcesz udostępnić stronę w internecie.
+Aktualizacja: 01.11.2026. Konfiguracja repozytorium jest gotowa do hostingu statycznego. Publiczna wersja była odczytana przez PageSpeed; zgodność wdrożonej wersji z bieżącym kodem oraz ustawienia konta Cloudflare wymagają osobnego sprawdzenia. Historia pomiarów jest w [QA.md](../QA.md).
 
-## Co jest przygotowane
+## Konfiguracja w repozytorium
 
-- `wrangler.jsonc`: nazwa `sqoonays-barbershop`, katalog `./dist`, standardowe obsługiwanie HTML i własna strona 404. Brak `main`, SSR, API, bazy i bindings.
-- Wrangler w `devDependencies` i w lockfile; nie używamy losowej wersji `latest` podczas wdrożenia.
-- `.node-version`: Node 24.22.1, dostępny w obrazie Workers Builds według dokumentacji Cloudflare. pnpm 9.5.0 wskazany w `package.json`.
-- `public/_headers`: `nosniff`, polityka referera i roczny cache `immutable` dla fingerprintowanych plików `/_astro/*` (także fontów) i wersjonowanych kart `/social/*`. HTML pozostaje przy domyślnej obsłudze cache Cloudflare.
-- `src/pages/404.astro`: polska strona błędu, zawsze `noindex`, z linkiem powrotu i Booksy. Nie ma fallbacku SPA zwracającego 200 dla nieistniejących adresów.
-- `.gitignore` pomija `node_modules`, `dist`, `.env`, `.wrangler`, lokalny store pnpm i pliki `.dev.vars`.
+- `wrangler.jsonc`: Worker `sqoonays-barbershop`, assety `./dist`, obsługa statycznego HTML i własnego `404.html`, bez SSR i kodu serwera.
+- `public/_headers`: nosniff, polityka referera oraz roczny immutable cache dla wersjonowanych plików `/_astro/*` i `/social/*`. HTML i robots pozostają odświeżalne.
+- `.node-version`: 24.22.1; pnpm 9.5.0 w `package.json`. Konkretne zależności odtwarza `pnpm-lock.yaml`.
+- `astro.config.mjs`: domyślna domena `https://sqoonays.pl`, sitemap, robots i lokalne fonty.
 
-## 1. Repozytorium na GitHub
+Nie potrzeba projektu Pages, adaptera SSR ani GitHub Actions. Nie wysyłaj `dist/` do GitHub — powstaje w buildzie. Zachowaj źródła, lockfile, konfiguracje, licencje oraz wygenerowaną kartę social i manifest.
 
-1. Utwórz repozytorium na swoim GitHub (może być prywatne).
-2. Dodaj ten projekt do repozytorium i wypchnij wybraną gałąź, np. `main`, używając GitHub Desktop lub Git. Jeżeli repozytorium już istnieje, użyj istniejącego `origin` — nie nadpisuj go.
-3. W repozytorium powinny znaleźć się źródła `src/`, `public/`, `scripts/`, dokumentacja, `package.json`, **`pnpm-lock.yaml`**, **`wrangler.jsonc`** i `.node-version`.
-4. Nie wysyłaj `.env`, tokenów Cloudflare ani danych logowania. Nie commituj `dist` ani `node_modules`; Cloudflare odtworzy je przy buildzie.
+## Ustawienia Workers Builds
 
-Nie musisz tworzyć workflow GitHub Actions. Cloudflare Workers Builds sam odbiera zmiany z GitHub.
-
-## 2. Połączenie z Cloudflare — etap publikacji
-
-W panelu Cloudflare przejdź do **Workers & Pages**, rozpocznij tworzenie aplikacji **Worker** i wybierz import/połączenie z repozytorium GitHub (nazwy etykiet w panelu mogą się zmieniać). Dla istniejącego Workera połączenie znajdziesz w jego ustawieniach **Builds**.
-
-1. Zaloguj się do GitHub i autoryzuj aplikację Cloudflare Workers and Pages. Wybierz dostęp do konkretnego repozytorium, zamiast wszystkich repozytoriów, jeśli taki zakres Ci wystarcza.
-2. Wybierz repozytorium oraz gałąź produkcyjną. Jeśli używasz `main`, push do `main` będzie wyzwalał publikację.
-3. Ustaw dokładnie:
+Dla istniejącego Workera sprawdź integrację repozytorium i gałąź publikacji w ustawieniach Builds. Jeżeli integracji jeszcze nie ma, właściciel może świadomie połączyć wybrane repozytorium GitHub. Nazwy etykiet panelu mogą się zmieniać.
 
 | Pole | Wartość |
 | --- | --- |
-| Worker / Project name | `sqoonays-barbershop` — zgodne z `name` w `wrangler.jsonc` |
-| Root directory | Katalog główny repozytorium (`/` lub puste pole według panelu) |
+| Worker / Project name | `sqoonays-barbershop` |
+| Root directory | Katalog główny repozytorium |
+| Production branch | Wybrana gałąź, np. `main`; nie zmieniaj bez ustalenia |
 | Build command | `pnpm cf:check` |
 | Deploy command | `pnpm exec wrangler deploy` |
-| Node | Z `.node-version`: `24.22.1` |
-| pnpm | Z `packageManager`: `pnpm@9.5.0` |
-| Build variable `SITE_URL` | Opcjonalne `https://sqoonays.pl` — ta domena jest już domyślna |
+| Node / pnpm | Z `.node-version` / `packageManager` |
+| Build variable `SITE_URL` | Opcjonalne `https://sqoonays.pl`, już domyślne w kodzie |
 | Build variable `SITE_NOINDEX` | Produkcja: brak lub `false`; kopia testowa: `true` |
 
-`assets.directory = "./dist"` jest już zapisane w konfiguracji. To **Workers Static Assets**, nie projekt Pages — pole „Build output directory” z instrukcji Pages nie zastępuje tutaj `wrangler.jsonc`.
+Cloudflare instaluje zależności z lockfile przed buildem. Przy wyłączonej automatycznej instalacji użyj `pnpm install --frozen-lockfile && pnpm cf:check`. Narzędzia z devDependencies są potrzebne podczas budowania.
 
-Cloudflare instaluje zależności przed buildem, rozpoznając pnpm i lockfile. Jeśli wyłączysz automatyczną instalację, użyj komendy budowania `pnpm install --frozen-lockfile && pnpm cf:check`. Nie ustawiaj instalacji wyłącznie zależności produkcyjnych — kompilator Tailwind, kontrola Astro i Wrangler są narzędziami deweloperskimi potrzebnymi podczas budowania.
+`SITE_URL` i `SITE_NOINDEX` są zmiennymi **budowania**, nie zmiennymi runtime w `vars` Workera. Ich zmiana wymaga nowego builda i wdrożenia. Samo podłączenie domeny nie zmienia HTML. Brak lub puste `SITE_URL` nie blokuje indeksowania. Publiczne kopie testowe muszą mieć jawne `SITE_NOINDEX=true`; noindex nie jest kontrolą dostępu.
 
-4. Na początek nie włączaj automatycznych preview builds dla innych gałęzi. Możesz skonfigurować je osobno później, ustawiając dla nich **`SITE_NOINDEX=true`**. Sam brak `SITE_URL` nie blokuje indeksowania.
-5. Utworzenie projektu i uruchomienie deploya opublikuje stronę. Po jego sukcesie użyj rzeczywistego adresu `workers.dev` zwróconego przez Cloudflare. Nie zgadujemy nazwy Twojej subdomeny konta.
+Push do gałęzi połączonej z Workers Builds może od razu opublikować stronę. Nie wykonuj push ani deploya bez upoważnienia. Tokena Cloudflare nie zapisuj w repozytorium ani czacie.
 
-Nie potrzebujesz tokena Cloudflare zapisanego w GitHub Actions. Uwierzytelnianie Workers Builds jest konfigurowane w Cloudflare. Nie wklejaj danych dostępu do repozytorium ani czatu.
+## Domena sqoonays.pl w OVH
 
-## 3. Pierwsza wersja i domena
+Zakup domeny i wybór adresu bez www zostały potwierdzone. Poniższe kroki dotyczą konfiguracji, której jeszcze nie wykonano lub która wymaga naprawy; nie ponawiaj zmian DNS, jeżeli domena jest już poprawnie podłączona.
 
-Możesz najpierw udostępnić testową wersję `workers.dev` z **build variable `SITE_NOINDEX=true`**: będzie miała `noindex` i robots blokujący indeksowanie. Jest to nadal publicznie dostępna strona — `noindex` nie jest hasłem ani kontrolą dostępu. Brak lub puste `SITE_URL` oznacza teraz domyślną produkcję `https://sqoonays.pl` z dopuszczonym indeksowaniem.
+1. Na właściwym koncie Cloudflare sprawdź strefę `sqoonays.pl`, jej status oraz przypisanie do Workera.
+2. Jeśli strefa nie istnieje, dodaj ją i zweryfikuj import rekordów względem OVH. Zachowaj rekordy poczty i innych usług. Przy istniejącym DNSSEC zastosuj procedurę migracji dostawcy.
+3. Tylko jeśli zmiana delegacji jest potrzebna: skopiuj dwa serwery nazw przydzielone **tej strefie** przez Cloudflare. W OVH zmień serwery w zakładce domeny „Serwery DNS”, nie przez dodanie rekordów NS w strefie. Nie używaj dawnych lub przykładowych nameserverów.
+4. Gdy strefa jest aktywna, sprawdź Worker → Settings → Domains & Routes → Custom Domain: `sqoonays.pl`, bez protokołu i wildcardu. Cloudflare obsługuje rekord i TLS dla Custom Domain. Nie wpisuj wymyślonego IP Workera.
+5. Upewnij się, że produkcyjny build nie ma `SITE_NOINDEX=true`. Po zatwierdzonym wdrożeniu sprawdź robots i canonical w publicznej odpowiedzi.
+6. Sprawdź `www.sqoonays.pl`: jeśli ma być obsługiwane, skonfiguruj HTTPS i przekierowanie 301/308 do `https://sqoonays.pl`, zachowując ścieżkę i query. Sam canonical nie wykonuje przekierowania.
 
-Po wybraniu domeny:
+Nie ma potrzeby przenoszenia rejestracji domeny z OVH. Nie kasuj istniejącej strefy ani rekordów pocztowych w ramach zwykłej publikacji kodu.
 
-1. Podłącz zatwierdzoną domenę w ustawieniach domen Workera. DNS i rejestracja domeny są osobnym krokiem.
-2. Dla `sqoonays.pl` domena jest już ustawiona domyślnie w repozytorium. Usuń `SITE_NOINDEX` lub ustaw `false` w **build variables**. Przy innej zatwierdzonej domenie nadpisz `SITE_URL`. Nie są to zmienne runtime ani sekrety i nie należy umieszczać ich w `vars` Workera.
-3. Uruchom ponowny build/deploy. Dopiero nowy build otrzyma canonical, absolutne OG, sitemap i robots dopuszczający indeksowanie.
-4. Sprawdź HTTPS i wybierz jeden wariant domeny. Przekierowania pozostałych wariantów skonfiguruj świadomie w Cloudflare — konfiguracja repozytorium nie zakłada własności żadnej domeny.
-
-Jeśli produkcją ma pozostać adres `workers.dev`, ustaw `SITE_URL` na ten **faktyczny** adres po potwierdzeniu, że ma być indeksowany.
-
-## Domena sqoonays.pl zakupiona w OVH
-
-Docelowy adres produkcji: **https://sqoonays.pl**, bez `www`. Użytkownik potwierdził zakup domeny w OVH. Poniższe kroki wykonuje właściciel w panelach dostawców — repozytorium nie zmienia delegacji DNS ani konfiguracji kont.
-
-1. W Cloudflare na tym samym koncie co Worker dodaj domenę `sqoonays.pl` jako strefę DNS (Add a domain / Onboard a domain) i wybierz plan Free, jeżeli odpowiada Twoim potrzebom. Nie przenosisz rejestracji ani płatności za domenę z OVH.
-2. Sprawdź zaimportowane rekordy DNS względem strefy OVH. Jeżeli korzystasz z poczty lub innych usług pod domeną, zachowaj ich rekordy MX/TXT/DKIM i odpowiednie rekordy subdomen — skan Cloudflare może nie odtworzyć całej strefy. Jeśli panel zgłasza istniejący DNSSEC, wykonaj oficjalną procedurę migracji przed zmianą delegacji.
-3. Cloudflare wyświetli **konkretną parę serwerów nazw dla tej strefy**. Skopiuj dokładnie te wartości; nie używaj przykładów z poradników.
-4. W OVH przejdź do domeny `sqoonays.pl` → **Serwery DNS** → modyfikacja serwerów. Zastąp dotychczasowe serwery dwoma wskazanymi przez Cloudflare. To zmiana serwerów DNS domeny, a nie dodanie rekordów NS w zakładce „Strefa DNS”. Poczekaj, aż strefa w Cloudflare uzyska status **Active**.
-5. W Cloudflare otwórz **Workers & Pages → sqoonays-barbershop → Settings → Domains & Routes → Add → Custom Domain**. Wpisz **`sqoonays.pl`**, bez `https://` i bez `/*`. Potwierdź podłączenie. Cloudflare tworzy rekord DNS i obsługuje certyfikat TLS dla Custom Domain. Jeśli importowany rekord dla tego samego hosta powoduje konflikt, sprawdź go przed zastąpieniem; nie kasuj całej strefy ani rekordów pocztowych. Nie wpisuj ręcznie adresu IP Workera.
-6. W **Settings → Builds → Build variables and secrets** upewnij się, że `SITE_NOINDEX` jest usunięte lub ma wartość **`false`**. `SITE_URL=https://sqoonays.pl` jest opcjonalne — to domyślna domena repozytorium. Są to ustawienia budowania, nie `Variables & Secrets` dla runtime. Uruchom ponowny build/deploy po podłączeniu domeny. Nowy build ma canonical, OG i sitemap dla `sqoonays.pl` oraz dopuszcza indeksowanie.
-7. Sprawdź `https://sqoonays.pl/`, `/robots.txt`, `/sitemap-index.xml` i nieistniejącą ścieżkę. Dla `www.sqoonays.pl` przygotuj osobno przekierowanie 301/308 do `https://sqoonays.pl`, z zachowaniem ścieżki i query string; docelowe DNS i HTTPS wariantu `www` także muszą być obsłużone. Sam canonical nie wykonuje przekierowania.
-
-Odczyt publicznego DNS 31.10.2026 podczas przygotowania: serwery `dns103.ovh.net` i `ns103.ovh.net`, rekord A domeny `213.186.33.5`, TXT `1|www.sqoonays.pl` i `v=spf1 -all`. Zapytanie MX nie zwróciło rekordów pocztowych; nie jest to pełny audyt strefy. Są to obserwacje, nie wartości do kopiowania do nowej konfiguracji. DNS nie został zmieniony.
-
-Źródła: [Cloudflare — dodanie domeny i zmiana nameserverów](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/), [Workers Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/), [OVH — zmiana serwerów DNS](https://docs.ovhcloud.com/pl/guides/web-cloud/domains/dns-server-edit).
-
-## Komendy lokalne
+## Kontrola lokalna i publikacja
 
 ```sh
 pnpm install --frozen-lockfile
@@ -85,30 +53,42 @@ pnpm cf:check
 pnpm cf:preview
 ```
 
-`cf:check` uruchamia `pnpm check`, `pnpm build`, `pnpm verify` oraz `wrangler deploy --dry-run`. Dry-run nie przesyła projektu do Cloudflare i nie uruchamia publikacji. `cf:preview` uruchamia lokalne środowisko Cloudflare pod `http://127.0.0.1:8787`; po zmianach źródeł wykonaj ponownie build i odśwież stronę. Zakończ przez Ctrl+C.
+Ostatnia komenda udostępnia lokalny podgląd na `http://127.0.0.1:8787`; zatrzymanie Ctrl+C. `cf:check` kończy się `wrangler deploy --dry-run` i **nie publikuje**.
 
-Sprawdź stronę główną, pliki CSS/WebP i nieistniejący adres, np. `/nie-ma-takiej-strony` — powinien zwrócić **404** z własną polską stroną. `pnpm dev` nadal uruchamia zwykły podgląd Astro na porcie 4321.
-
-## Alternatywa: ręczny deploy z komputera
-
-Te komendy są przeznaczone do późniejszego, świadomego wdrożenia. Nie zostały wykonane w ramach przygotowania.
+Alternatywa dla Workers Builds, wyłącznie po upoważnieniu:
 
 ```sh
 pnpm exec wrangler login
 pnpm cf:deploy
 ```
 
-Sprawdź konto i nazwę Workera przed publikacją. `cf:deploy` ponawia cały check/build/verify/dry-run, a następnie wykonuje **rzeczywisty deploy**. Lokalne `SITE_URL` ustaw w `.env` na podstawie `.env.example`. Nie ma potrzeby logowania do Cloudflare przy zwykłym buildzie lub dry-run.
+`cf:deploy` ponawia kontrole i wykonuje rzeczywisty deploy. Sprawdź konto, nazwę Workera i zakres publikacji przed uruchomieniem. Nie uruchamiaj obu sposobów jednocześnie.
 
-## Kontrola po publikacji
+## Checklista po zatwierdzonym wdrożeniu
 
-Potwierdź adresy Booksy i mapę, wersję mobilną, canonical, OG, robots i sitemap. Potwierdź ceny i dane zespołu oraz uzupełnij pozostałe zdjęcia. Mapa Google na życzenie właściciela łączy użytkownika z zewnętrznym dostawcą — uwzględnij to w docelowej informacji o prywatności. Search Console i Profil Firmy Google pozostają osobnymi ręcznymi krokami opisanymi w README.
+- [ ] Strona główna i zasoby odpowiadają 200 bez logowania; nieistniejący adres daje 404.
+- [ ] `https://sqoonays.pl/robots.txt` ma `Allow: /` i wskazuje `https://sqoonays.pl/sitemap-index.xml`.
+- [ ] HTML głównej strony ma `index, follow`, canonical `https://sqoonays.pl/` oraz absolutne URL karty social. 404 pozostaje noindex i poza sitemap.
+- [ ] Sprawdzono HTTPS i docelowe zachowanie wariantu www.
+- [ ] Na mobile/desktop działają menu, cennik, Booksy, dojazd i mapa po przewinięciu; fotografie mają właściwe kadry.
+- [ ] Powtórz PageSpeed mobile i desktop oraz test karty linku. Zapisz URL raportu, datę i wdrożony commit w QA; nie opisuj wyniku starej wersji jako wyniku nowych zmian.
+- [ ] Potwierdź dane firmy i przygotuj informację o prywatności zgodną z faktycznymi integracjami.
 
-## Oficjalne źródła
+## Ręcznie: Google Search Console i Profil Firmy Google
 
-- [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/get-started/)
-- [Workers Builds — GitHub](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/)
+Te kroki są oddzielne od wdrożenia i wymagają upoważnienia właściciela:
+
+1. W Search Console dodaj usługę domenową `sqoonays.pl`. Weryfikacyjny rekord TXT skopiuj dokładnie z panelu i dodaj w aktywnej strefie DNS.
+2. Po weryfikacji zgłoś `https://sqoonays.pl/sitemap-index.xml`.
+3. W Inspekcji URL sprawdź stronę główną i jej dostępność dla Google. Ewentualne zgłoszenie ponownej indeksacji nie gwarantuje terminu pojawienia się w wynikach.
+4. W Profilu Firmy Google ustaw stronę `https://sqoonays.pl/`, zachowaj Booksy jako rezerwację i zweryfikuj spójność nazwy/adresu. Telefon i godziny dodawaj wyłącznie po potwierdzeniu.
+5. Obserwuj raporty indeksowania i Core Web Vitals; stan zapisuj w QA bez publikowania danych dostępowych.
+
+## Źródła dostawców
+
+- [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/get-started/)
+- [Workers Builds z GitHub](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/)
 - [Komendy build i deploy](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
-- [Wersje Node i pnpm w buildzie](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/)
-- [Statyczne strony i 404](https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/)
-- [Nagłówki i cache](https://developers.cloudflare.com/workers/static-assets/headers/)
+- [Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
+- [Zmiana nameserverów](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/)
+- [OVH — edycja serwerów DNS](https://docs.ovhcloud.com/pl/guides/web-cloud/domains/dns-server-edit)

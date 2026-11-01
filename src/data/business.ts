@@ -26,5 +26,6 @@ export const navigation = [
   { href: '#o-nas', label: 'O nas' },
   { href: '#zespol', label: 'Barberzy' },
   { href: '#galeria', label: 'Galeria' },
+  { href: '#opinie', label: 'Opinie' },
   { href: '#kontakt', label: 'Kontakt' },
 ] as const;

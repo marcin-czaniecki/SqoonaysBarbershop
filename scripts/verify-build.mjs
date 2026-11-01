@@ -19,6 +19,16 @@ for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
 assert.ok(html.includes(booking));
 assert.ok(html.includes('https://www.instagram.com/sqoonaybarbershop/'));
 assert.ok(html.includes('https://www.google.com/maps/dir/?api=1'));
+const reviewsSection = html.match(/<section\s+id="opinie"[\s\S]*?<\/section>/)?.[0];
+assert.ok(reviewsSection, 'Dedicated reviews section exists');
+assert.match(reviewsSection, /href="https:\/\/g\.page\/r\/CULNfIfXWZ_jEBM\/review"/);
+assert.match(reviewsSection, /href="https:\/\/maps\.app\.goo\.gl\/YjZ2wrKRy9YpHzVGA"/);
+assert.ok(html.indexOf('id="galeria"') < html.indexOf('id="opinie"'));
+assert.ok(html.indexOf('id="opinie"') < html.indexOf('id="kontakt"'));
+assert.match(reviewsSection, /data-reviews-state="not-connected"/, 'Default review mode needs no API');
+assert.doesNotMatch(reviewsSection, /<blockquote|rating-stars|data-icon="star"/, 'Disconnected state contains no made-up quotes, stars or scores');
+assert.doesNotMatch(reviewsSection, /<iframe|<script/, 'Reviews are an independent static component, without a map or third-party widget');
+assert.ok(html.includes('href="#opinie"'), 'Reviews are reachable from navigation');
 assert.equal(/<script[^>]+src="https?:/i.test(html), false, 'No third-party scripts');
 
 // Guard the loading regressions identified by the PageSpeed audit.

@@ -1,0 +1,56 @@
+---
+import { business } from '../data/business';
+import { googleReviews, googleReviewsState, type GoogleReviewsState } from '../data/reviews';
+import Arrow from './Arrow.astro';
+import Icon from './Icon.astro';
+import RatingStars from './RatingStars.astro';
+
+interface Props { data?: GoogleReviewsState; }
+const { data = googleReviewsState } = Astro.props;
+const ready = data.status === 'ready'
+  && Number.isFinite(data.averageRating) && data.averageRating >= 1 && data.averageRating <= 5
+  && Number.isInteger(data.totalReviewCount) && data.totalReviewCount > 0;
+const formatRating = (value: number) => new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value);
+const formatDate = (value: string) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+};
+---
+<section id="opinie" class="section reviews" aria-labelledby="reviews-title" data-reviews-state={ready ? 'ready' : data.status === 'ready' ? 'unavailable' : data.status}>
+  <div class="container">
+    <div class="reviews-layout">
+      <div class="reviews-copy">
+        <p class="eyebrow">05 / OPINIE KLIENTÓW</p>
+        <h2 id="reviews-title">Twoja wizyta.<br /><span class="serif-emphasis">Twoje słowa.</span></h2>
+        <p class="reviews-intro">Byłeś już na Mylnej? Podziel się swoim doświadczeniem. Twoja opinia pomaga innym znaleźć swój kolejny fotel.</p>
+        <a href={googleReviews.writeReviewUrl} class="button button--dark reviews-write"><span>Wystaw opinię<span class="sr-only"> w Google</span></span><Arrow diagonal /></a>
+        <p class="reviews-signin">Google może poprosić Cię o zalogowanie.</p>
+      </div>
+      <div class="reviews-profile">
+        <div class="reviews-profile-top"><span class="reviews-google" translate="no">Google Maps</span><Icon name="rate_review" size={32} /></div>
+        <h3>{business.name}</h3>
+        <p class="reviews-address">{business.address.street} · {business.address.city}</p>
+        <div class="reviews-profile-content">
+          {ready && data.status === 'ready' ? <>
+            <div class="reviews-summary"><strong class="reviews-average">{formatRating(data.averageRating)}</strong><div><RatingStars value={data.averageRating} /><p>{data.totalReviewCount} <span>— liczba opinii w Google</span></p></div></div>
+            <p class="reviews-selection">{data.selectionDescription}</p>
+            {formatDate(data.updatedAt) && <p class="reviews-updated">Dane z {formatDate(data.updatedAt)}.</p>}
+          </> : <>
+            <h4>Poznaj opinie<br />naszych gości.</h4>
+            <p>Aktualną ocenę i komentarze znajdziesz w naszej wizytówce Google.</p>
+          </>}
+          <a href={googleReviews.profileUrl} class="reviews-read"><span>Zobacz opinie<span class="sr-only"> o Sqoonay’s Barbershop w Google Maps</span></span><Arrow diagonal /></a>
+        </div>
+      </div>
+    </div>
+    {ready && data.status === 'ready' && data.reviews.length > 0 && <div class="reviews-list" aria-label="Opinie klientów z Google">
+      {data.reviews.map((review) => <figure class="review">
+        <RatingStars value={review.rating} />
+        {review.text && <blockquote><p>{review.text}</p></blockquote>}
+        {review.translated && <p class="review-translation">Opinia przetłumaczona przez Google.</p>}
+        <figcaption><a href={review.author.profileUrl} class="review-author">{review.author.avatarUrl && <img src={review.author.avatarUrl} alt="" width="32" height="32" loading="lazy" referrerpolicy="no-referrer" />}{review.author.name}<span class="sr-only"> — profil autora w Google</span></a>{formatDate(review.publishedAt) && <time datetime={review.publishedAt}>{formatDate(review.publishedAt)}</time>}<a href={review.sourceUrl} class="text-link">Opinia w Google <Arrow diagonal /></a></figcaption>
+      </figure>)}
+    </div>}
+    <div class="reviews-bottom"><p>Najpierw poznaj nas. Potem wpadnij na fotel.</p><a href={business.links.booking} class="text-link">Umów wizytę<span class="sr-only"> przez Booksy</span> <Arrow diagonal /></a></div>
+  </div>
+</section>

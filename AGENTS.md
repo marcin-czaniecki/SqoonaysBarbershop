@@ -14,8 +14,8 @@ Build an accessible, fast, conversion-oriented, Polish-language static website f
 - Mobile first, with a clear booking CTA and working outbound links.
 - Never invent prices, staff biographies, phone numbers, opening hours, ratings, quotes, awards, or reviews.
 - For facts awaiting verification, use obvious internal TODOs / placeholders and do not render unverified data as fact.
-- Do not hotlink or scrape Instagram/Booksy photos for production. Only use assets supplied with permission. Until then create tasteful CSS-based image placeholders or a clearly temporary local asset.
-- Use a legitimate map directions link rather than an unsolicited third-party embedded map.
+- Serve images locally and only with documented permission. The owner authorized the current Booksy portraits and Instagram portfolio; provenance is recorded in `src/assets/SOURCES.md` and `src/assets/team/SOURCES.md`. This does not authorize arbitrary future downloads. Do not hotlink or automate scraping.
+- The owner requested a visible Google Maps embed. Keep automatic viewport-based loading, its reserved height, accessible title, no-JavaScript fallback and a direct directions link. Do not add unrelated third-party embeds.
 - Do not copy a third party's website design or write exaggerated marketing claims.
 - Protect privacy: don't install tracking or third-party scripts by default. Document any analytics/privacy decisions.
 
@@ -23,17 +23,19 @@ Build an accessible, fast, conversion-oriented, Polish-language static website f
 - Organize layout and page sections into reusable Astro components.
 - Maintain a usable README including installation, local development, build and content update instructions.
 - Add meaningful metadata, canonical URL configuration, sitemap, robots.txt, Open Graph and `HairSalon`/`LocalBusiness` JSON-LD using only confirmed business facts.
-- Domain is unknown: make site URL configurable and clearly document the production value to set later.
+- Confirmed production origin: `https://sqoonays.pl` (domain purchased at OVH). Keep it as the default, with optional `SITE_URL` override. Production is indexable; only explicit `SITE_NOINDEX=true` blocks preview indexing. Keep 404 noindex.
+- `SPEC.md` defines scope and fact status; `src/data/*` contains runtime data. Update both when a business fact changes; avoid copying editable price tables into documentation.
+- Use `README.md` as the documentation index, `SETUP.md` for local setup, `docs/CONTENT.md` for editing, `docs/CLOUDFLARE.md` for hosting, `QA.md` for current checks and `ROADMAP.md` for proposals. Historical QA belongs in `docs/archive/`.
 - Use purposeful visual hierarchy; avoid a template-like hero and excessive animations.
 - Keep navigation anchors, CTA, external link behavior, and mobile layout polished.
 
 ## Workflow
 1. Read `SPEC.md` and inspect the current repository before making changes.
-2. Implement a complete first version of the MVP, not only a plan.
+2. Complete the requested change within the existing Astro site. Roadmap proposals are not authorization to implement or publish future features.
 3. If network/package installation is blocked, request permission or explain the specific blocker.
-4. After changes, run the project checks available (`pnpm install`, `pnpm astro check` if configured, `pnpm build`). Fix issues rather than ignoring them.
+4. Use `pnpm install --frozen-lockfile` for the existing dependency set and `pnpm cf:check` for Astro/TS, static build, build verification and Wrangler dry-run. Fix issues rather than ignoring them. Never confuse dry-run with deployment.
 5. When browser-based preview or screenshots are available, verify mobile and desktop. Otherwise describe what needs manual inspection.
-6. Do not register a domain, deploy, change a Google Business Profile, connect analytics, or publish external content without explicit approval.
+6. Do not deploy, push to an auto-deploy branch, change DNS, Google Business Profile or Search Console, connect analytics, or publish external content without explicit approval. Domain purchase and public availability do not authorize these actions.
 7. Do not silently overwrite unrelated existing work; inspect `git status` first.
 8. End each task with: summary of changes, commands/checks run and their results, outstanding assumptions and a short next-step list.
 
