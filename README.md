@@ -36,7 +36,11 @@ TypeScript 6 jest celowo zgodny z zakresem wspieranym przez `@astrojs/check`; Ty
 | `astro.config.mjs` | SSG, Vite/Tailwind, konfigurowalna domena i sitemap |
 | `scripts/robots.mjs` | Generuje statyczny robots.txt po buildzie; nie jest endpointem |
 | `scripts/verify-build.mjs` | Kontrola semantyki, linków, lokalnych assetów i SEO wygenerowanego HTML |
-| `public/og.svg`, `public/og.png` | Edytowalna wizytówka typograficzna i zgodny z social media PNG 1200×630 |
+| `src/data/social.ts` | Tytuł, opis i teksty karty udostępniania linku |
+| `scripts/generate-og.mjs` | Generator karty ze zdjęciem wnętrza, lokalnymi fontami i ikonami |
+| `src/data/social-image.json` | Generowany manifest ścieżki i wymiarów karty |
+| `public/social/sqoonays-*.png` | Karta 1200×630 z hashem treści w nazwie |
+| `public/og.svg`, `public/og.png` | Generowane SVG i zgodny wstecznie adres PNG karty |
 | `wrangler.jsonc` | Gotowa konfiguracja Cloudflare Workers Static Assets, bez kodu Workera |
 | `public/_headers` | Nagłówki odpowiedzi i cache dla plików z hashem |
 | `src/pages/404.astro` | Własna strona błędu 404 |
@@ -58,7 +62,9 @@ Po otrzymaniu zdjęć z prawem do publikacji:
 4. Komponent `PhotoFrame.astro` wykorzystuje Astro `Image`, warianty do 1080 px (hero do 1440 px), `srcset`, rozmiary obrazu i lazy loading. Hero jest ładowane od razu z wysokim priorytetem; jego kadr CSS eksponuje stanowiska. Domyślny `src` również ma ograniczoną szerokość.
 5. Przy kolejnych zdjęciach aktualizuj podpisy i źródła w `src/data/media.ts` oraz `src/assets/SOURCES.md`. Sprawdź kadry na telefonie i desktopie.
 
-Fonty Manrope i Barlow Condensed są serwowane lokalnie z pakietów Fontsource na licencji OFL-1.1; licencje znajdują się w odpowiednich pakietach. Bez zewnętrznych zapytań do Google Fonts. Po zmianie grafiki OG uruchom `pnpm generate:og` (używa procesora Sharp dostarczanego z Astro), następnie build i verify.
+Fonty Manrope i Barlow Condensed są serwowane lokalnie z pakietów Fontsource na licencji OFL-1.1; licencje znajdują się w odpowiednich pakietach. Bez zewnętrznych zapytań do Google Fonts.
+
+Ikony interfejsu pochodzą z [Google Material Symbols](https://fonts.google.com/icons), wariant **Outlined**. Dziewięć potrzebnych SVG jest zapisanych lokalnie w `src/assets/icons/material-symbols/`; wspólny, typowany komponent `Icon.astro` składa je bez fontu ikon i dodatkowego JavaScriptu. Pliki źródłowe i przypiętą rewizję opisano w `SOURCES.md` obok ikon. Licencja Apache 2.0 jest dołączona do repozytorium i wynikowego builda w `public/licenses/material-symbols-LICENSE.txt`. Strzałka w grafice OG również pochodzi z tego zestawu. Oznaczenia menu/zamknięcia i plus/minus przełączają się przez CSS oraz natywny stan `details`.
 
 ## Dane do potwierdzenia przed publikacją
 
@@ -79,6 +85,16 @@ Docelowa domena potwierdzona przez użytkownika: **https://sqoonays.pl** (rejest
 Bez `SITE_URL` strona ma `noindex, nofollow`, robots.txt z `Disallow: /`, bez canonical i bez mapy witryny. Nie tworzymy fikcyjnej domeny. Z ustawionym `SITE_URL` powstają canonical, absolutne adresy OG, `sitemap-index.xml`, `sitemap-0.xml` oraz robots.txt dopuszczający indeksowanie. **Nie ustawiaj domeny produkcyjnej dla publicznego środowiska testowego.** `noindex` nie jest kontrolą dostępu.
 
 JSON-LD `HairSalon` zawiera jedynie nazwę, adres, Booksy, Instagram i adres strony, gdy jest ustalony. Nie dodajemy niepotwierdzonych cen, godzin, telefonu, zdjęć ani ocen. Jedno H1, polski język dokumentu, title/description, OG/Twitter Card i favicon są dostępne od początku.
+
+### Podgląd linku w social media
+
+Karta 1200×630 zawiera autentyczne zdjęcie wnętrza, nazwę, lokalizację, hasło i informację o rezerwacji Booksy. Teksty są w `src/data/social.ts`, a kompozycja w `scripts/generate-og.mjs`. Generator korzysta z lokalnego zdjęcia i fontów; zamienia litery na kształty SVG, dzięki czemu grafika nie zależy od fontów systemowych na Windows lub w Cloudflare. Używa Sharp i narzędzi fontów dostarczanych z Astro, bez dodatkowych zależności ani sieci podczas generowania.
+
+`pnpm generate:og` tworzy PNG, samodzielny SVG i `src/data/social-image.json`. `pnpm build` wywołuje generator automatycznie przed Astro. Po ręcznych zmianach tekstów uruchom generator także dla podglądu `pnpm dev`. Commituj manifest i wygenerowaną kartę razem ze źródłami. Hash treści w nazwie pliku zmienia URL obrazu przy zmianie grafiki; `/og.png` pozostaje zgodnym wstecznie adresem. Starsze, już opublikowane wersje kart warto zachować, jeśli mogą być nadal używane w pamięci podręcznej komunikatorów.
+
+Layout publikuje tytuł, krótki opis, adres kanoniczny, absolutny HTTPS URL grafiki, MIME, wymiary i opis alternatywny Open Graph oraz Twitter `summary_large_image`. Wymaga to poprawnego `SITE_URL` podczas builda. Nie trzeba instalować skryptów Facebooka, SDK ani trackerów.
+
+Po wdrożeniu sprawdź publiczny HTML oraz URL obrazu z manifestu: oba muszą odpowiadać bez logowania i blokad dla botów. Serwisy mają własną pamięć podręczną, zasady i różne kadry; karta nie gwarantuje identycznego wyglądu w każdej aplikacji. Przy starym podglądzie Facebook/Messenger możesz ręcznie użyć [Sharing Debugger](https://developers.facebook.com/tools/debug/) i ponownego pobrania (`Scrape Again`). Grafika nie będzie widoczna online, dopóki zmiany nie zostaną wdrożone. W chwili lokalnej kontroli 01.11.2026 domena `sqoonays.pl` nie rozwiązywała się przez używany resolver, więc testu pobierania karty z produkcji nie wykonano.
 
 ## Prywatność i dostępność
 

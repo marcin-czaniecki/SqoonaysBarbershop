@@ -1,6 +1,7 @@
 ---
 import { navigation } from '../data/business';
 import BookingLink from './BookingLink.astro';
+import Icon from './Icon.astro';
 ---
 <header class="site-header">
   <div class="container header-inner">
@@ -10,8 +11,8 @@ import BookingLink from './BookingLink.astro';
     </nav>
     <BookingLink class="header-booking" />
     <details class="mobile-menu">
-      <summary><span>Menu</span><span class="menu-symbol" aria-hidden="true"></span></summary>
-      <nav aria-label="Nawigacja mobilna">{navigation.map(({ href, label }) => <a href={href}>{label}<span aria-hidden="true">↗</span></a>)}</nav>
+      <summary><span>Menu</span><span class="menu-symbol"><Icon name="menu" size={24} class="when-closed" /><Icon name="close" size={24} class="when-open" /></span></summary>
+      <nav aria-label="Nawigacja mobilna">{navigation.map(({ href, label }) => <a href={href}>{label}<Icon name="arrow_right_alt" /></a>)}</nav>
     </details>
   </div>
 </header>

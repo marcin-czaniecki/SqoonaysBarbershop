@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile, access } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 
 const html = await readFile('dist/index.html', 'utf8');
 const robots = await readFile('dist/robots.txt', 'utf8');
@@ -48,10 +49,23 @@ if (canonical) {
 for (const [, path] of html.matchAll(/(?:src|href)="(\/(?!\/)[^"#?]+)(?:[?#][^"]*)?"/g)) {
   await access(`dist${path}`);
 }
-const png = await readFile('dist/og.png');
+const imageUrl = html.match(/property="og:image"\s+content="([^"]+)"/)?.[1];
+assert.ok(imageUrl, 'Social image metadata exists');
+const parsedImageUrl = new URL(imageUrl, canonical ?? 'https://local.invalid');
+assert.match(parsedImageUrl.pathname, /^\/social\/sqoonays-[a-f0-9]{12}\.png$/);
+if (canonical) assert.equal(parsedImageUrl.origin, new URL(canonical).origin, 'Social image uses the canonical host');
+const png = await readFile(`dist${parsedImageUrl.pathname}`);
 assert.equal(png.subarray(1, 4).toString(), 'PNG');
 assert.equal(png.readUInt32BE(16), 1200);
 assert.equal(png.readUInt32BE(20), 630);
+assert.ok(png.length < 1024 * 1024, 'Social card stays below 1 MB');
+assert.ok(parsedImageUrl.pathname.includes(createHash('sha256').update(png).digest('hex').slice(0, 12)), 'Social image filename matches its content');
+assert.deepEqual(await readFile('dist/og.png'), png, 'Legacy social image URL still works');
+assert.equal(html.match(/name="twitter:image"\s+content="([^"]+)"/)?.[1], imageUrl);
+assert.match(html, /property="og:image:type"\s+content="image\/png"/);
+assert.match(html, /name="twitter:card"\s+content="summary_large_image"/);
+assert.ok(html.includes('property="og:image:alt"'));
+assert.ok(html.includes('name="twitter:image:alt"'));
 const notFound = await readFile('dist/404.html', 'utf8');
 assert.match(notFound, /content="noindex, nofollow"/);
 assert.match(notFound, /href="\/"/);

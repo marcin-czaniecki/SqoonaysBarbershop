@@ -2,13 +2,14 @@
 import { services, serviceReview } from '../data/services';
 import ServiceRow from './ServiceRow.astro';
 import BookingLink from './BookingLink.astro';
+import Icon from './Icon.astro';
 ---
 <section id="uslugi" class="section services" aria-labelledby="services-title">
   <div class="container">
     <div class="section-heading"><div><p class="eyebrow">02 / USŁUGI I CENNIK</p><h2 id="services-title">Czas na <span class="serif-emphasis">dobrą zmianę.</span></h2></div><p>Wybierz swoją usługę.<br />Termin znajdziesz w Booksy.</p></div>
     {!serviceReview.confirmed && <p class="review-note">Cennik wstępny · dane z {serviceReview.sourceDateLabel}, do potwierdzenia przez salon. Aktualne ceny i czasy sprawdź w Booksy.</p>}
     <ul class="service-list">{services.filter((service) => service.featured).map((service, index) => <ServiceRow service={service} index={index + 1} />)}</ul>
-    <details class="more-services"><summary>Pozostałe usługi <span class="details-symbol" aria-hidden="true"></span></summary><ul class="service-list">{services.filter((service) => !service.featured).map((service, index) => <ServiceRow service={service} index={index + 4} />)}</ul></details>
+    <details class="more-services"><summary>Pozostałe usługi <span class="details-symbol"><Icon name="add" class="when-closed" /><Icon name="remove" class="when-open" /></span></summary><ul class="service-list">{services.filter((service) => !service.featured).map((service, index) => <ServiceRow service={service} index={index + 4} />)}</ul></details>
     <div class="services-bottom"><p>Rezerwacja przez Booksy.<br /><span>Płatność na miejscu.</span></p><BookingLink variant="gold" /></div>
   </div>
 </section>

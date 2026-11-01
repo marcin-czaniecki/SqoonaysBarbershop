@@ -86,3 +86,30 @@ Zmieniono dane mediów, podpisy i tekst galerii, rozmiary obrazów oraz kadr CSS
 - Publiczne profile i pobrane fotografie obejrzano. Nie ponawiano wcześniej zablokowanego dostępu przeglądarki do lokalnego podglądu. Ostateczne kadry strony na mobile i desktopie pozostają do ręcznego obejrzenia przez `pnpm dev`.
 
 Nie wykonano commit/push ani publikacji. Dalsze nierozstrzygnięte dane biznesowe pozostają wskazane w README.
+
+## Aktualizacja — Google Material Symbols, 01.11.2026
+
+Na życzenie użytkownika zastąpiono ikony interfejsu zestawem Google Material Symbols Outlined: strzałki CTA i linków, powrót na górę, lokalizacja, nożyczki w pasku usług oraz menu/zamknięcie i plus/minus. Pobrano dziewięć niezmodyfikowanych SVG z przypiętej rewizji oficjalnego repozytorium Google. Typowany komponent `Icon.astro` importuje je jako lokalne komponenty SVG, z currentColor, aria-hidden i focusable=false. Przełączanie stanów menu i cennika korzysta wyłącznie z CSS/natywnego details. Usunięto zastąpione znaki Unicode i rysunki ikon w CSS. Wordmark i favicon pozostają elementami marki. Strzałkę w źródle grafiki OG również zastąpiono geometrią Material Symbols; PNG wygenerowano ponownie.
+
+Źródła są w `src/assets/icons/material-symbols/SOURCES.md`, pełna licencja Apache 2.0 w `public/licenses/material-symbols-LICENSE.txt`, obecna także w dist. Nie dodano biblioteki ikon, fontu ikon ani zapytań do Google Fonts.
+
+- `pnpm generate:og`: sukces; PNG 1200×630 obejrzany po zmianie.
+- `pnpm cf:check` z `SITE_URL=https://sqoonays.pl`: sukces. Astro check 26 plików, 0 błędów/ostrzeżeń/wskazówek; build, verify i Wrangler dry-run zakończone sukcesem.
+- Kontrola HTML: 30 dekoracyjnych SVG, wszystkie dziewięć nazw ikon obecne, atrybuty dostępności i currentColor poprawne. Brak zastąpionych glifów Unicode i odwołań do fonts.googleapis.com/fonts.gstatic.com w głównym dokumencie.
+- Zależności nie zmieniły się, instalacja nie była ponawiana. Wizualny przegląd układu i obu stanów menu/cennika na mobile pozostaje do wykonania w lokalnym podglądzie; wcześniejszej blokady dostępu do localhost nie obchodzono.
+
+Nie wykonano commit/push ani publikacji.
+
+## Aktualizacja — karta udostępniania linku, 01.11.2026
+
+Przygotowano kartę Open Graph 1200×630 ze zdjęciem salonu dostarczonym przez użytkownika, nazwą, adresem, hasłem i Booksy. Karta ma około 205 KB. `src/data/social.ts` jest miejscem edycji tekstów; generator tworzy PNG, samodzielny SVG i manifest `social-image.json`. Nazwa głównego PNG zawiera hash treści, aby nowa wersja grafiki otrzymała nowy URL. Zachowano `/og.png`. `pnpm build` uruchamia generator automatycznie. Litery Barlow Condensed i Manrope zamieniane są na kształty z lokalnych plików Fontsource za pomocą fontkitten dostarczonego z Astro; nie zależą od fontów zainstalowanych w systemie i nie wymagają zapytań do Google. Nie dodano zależności.
+
+Layout ma odrębny krótki tytuł i opis udostępniania, og:url, absolutny HTTPS adres obrazu, MIME, wymiary, opis alternatywny i komplet Twitter summary_large_image z tym samym obrazem. Generator i manifest nie zmieniają domeny ani ustawień Cloudflare.
+
+- `pnpm generate:og`: sukces; finalną kartę obejrzano wizualnie. Kolejna generacja podczas builda zwróciła ten sam hash `6c60d775025f`.
+- `pnpm cf:check` z SITE_URL=https://sqoonays.pl: sukces. Astro check 27 plików, 0 błędów/ostrzeżeń/wskazówek; build, verify i Wrangler dry-run zakończone sukcesem.
+- Rozszerzone verify potwierdziło: wersjonowany lokalny PNG, zgodny hash, wymiary 1200×630, rozmiar poniżej 1 MB, host zgodny z canonical, ten sam obraz dla OG/Twitter, atrybuty alt i działający zgodny wstecznie plik og.png.
+- `pnpm cf:preview` i lokalne żądania HTTP: HTML 200, karta 200, Content-Type image/png, 210323 bajty, metadata URL https://sqoonays.pl/social/sqoonays-6c60d775025f.png. Lokalny serwer zatrzymano po kontroli.
+- `git diff --check`: kod 0. Zachowano zastane zmiany ikon. Nie wykonano instalacji, commit/push ani publikacji.
+
+Ograniczenie: publiczna domena sqoonays.pl nie rozwiązywała się przez używany resolver podczas próby odczytu strony. Nie potwierdzono pobrania karty z produkcji ani wyglądu w konkretnym komunikatorze. Po wdrożeniu domena i obraz muszą być publicznie dostępne; odświeżenie starszego podglądu może wymagać ponownego pobrania przez daną platformę. Instrukcja znajduje się w README.

@@ -1,0 +1,32 @@
+---
+import Add from '../assets/icons/material-symbols/add.svg';
+import ArrowRightAlt from '../assets/icons/material-symbols/arrow_right_alt.svg';
+import ArrowUpward from '../assets/icons/material-symbols/arrow_upward.svg';
+import Close from '../assets/icons/material-symbols/close.svg';
+import ContentCut from '../assets/icons/material-symbols/content_cut.svg';
+import LocationOn from '../assets/icons/material-symbols/location_on.svg';
+import Menu from '../assets/icons/material-symbols/menu.svg';
+import NorthEast from '../assets/icons/material-symbols/north_east.svg';
+import Remove from '../assets/icons/material-symbols/remove.svg';
+
+const icons = {
+  add: Add,
+  arrow_right_alt: ArrowRightAlt,
+  arrow_upward: ArrowUpward,
+  close: Close,
+  content_cut: ContentCut,
+  location_on: LocationOn,
+  menu: Menu,
+  north_east: NorthEast,
+  remove: Remove,
+} as const;
+
+interface Props {
+  name: keyof typeof icons;
+  size?: number;
+  class?: string;
+}
+const { name, size = 20, class: className = '' } = Astro.props;
+const Symbol = icons[name];
+---
+<Symbol class:list={['icon', className]} width={size} height={size} fill="currentColor" aria-hidden="true" focusable="false" data-icon={name} />

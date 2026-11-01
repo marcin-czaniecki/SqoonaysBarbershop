@@ -1,11 +1,11 @@
 ---
 import { business } from '../data/business';
 import BookingLink from './BookingLink.astro';
-import Arrow from './Arrow.astro';
+import Icon from './Icon.astro';
 const year = new Date().getFullYear();
 ---
 <footer class="site-footer"><div class="container">
-  <div class="footer-top"><a href="#start" class="wordmark">Sqoonay’s<span>BARBERSHOP · GDYNIA</span></a><p>{business.address.street}, {business.address.city}</p><a href="#start" class="text-link">Wróć na górę <Arrow diagonal /></a></div>
-  <div class="footer-bottom"><p>© {year} {business.name}</p><div><a href={business.links.booking}>Booksy ↗</a><a href={business.links.instagram}>Instagram ↗</a></div><p>Włosy. Broda. Twój styl.</p></div>
+  <div class="footer-top"><a href="#start" class="wordmark">Sqoonay’s<span>BARBERSHOP · GDYNIA</span></a><p>{business.address.street}, {business.address.city}</p><a href="#start" class="text-link">Wróć na górę <Icon name="arrow_upward" class="arrow" /></a></div>
+  <div class="footer-bottom"><p>© {year} {business.name}</p><div><a href={business.links.booking}>Booksy <Icon name="north_east" size={14} /></a><a href={business.links.instagram}>Instagram <Icon name="north_east" size={14} /></a></div><p>Włosy. Broda. Twój styl.</p></div>
 </div></footer>
 <aside class="mobile-booking" aria-label="Szybka rezerwacja"><span>Twój kolejny termin</span><BookingLink variant="gold" /></aside>
