@@ -13,7 +13,7 @@ interface Props {
 const { label, number = '01', monogram = 'S', class: className = '', photo = null, eager = false, sizes = '(min-width: 900px) 50vw, 100vw' } = Astro.props;
 ---
 <div class:list={['photo-frame', className, { 'photo-frame--filled': photo }]}>
-  {photo ? <Image src={photo.image} alt={photo.alt} widths={[320, 480, 768, 1080]} sizes={sizes} loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} /> : <>
+  {photo ? <Image src={photo.image} alt={photo.alt} width={Math.min(photo.image.width, eager ? 1440 : 1080)} widths={eager ? [480, 768, 1080, 1440] : [320, 480, 768, 1080]} sizes={sizes} loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} /> : <>
     <span class="frame-index" aria-hidden="true">{number} / SQOONAY’S</span>
     <div class="frame-art" aria-hidden="true"><span>{monogram}</span></div>
     <div class="frame-caption"><span class="frame-caption-label">{label}</span><span>Miejsce na zdjęcie</span></div>

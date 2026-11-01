@@ -64,3 +64,25 @@ Przygotowano `wrangler.jsonc`, lokalny Wrangler 4.156.0, komendy `cf:check`, `cf
 - `git diff --check`: kod 0. Lokalny serwer Cloudflare zatrzymano po kontroli.
 
 Nie uruchomiono `wrangler login`, właściwego deploya, połączenia kont GitHub/Cloudflare ani push do GitHub. Nie ma potwierdzenia builda w zdalnym Workers Builds — przygotowanie zweryfikowano lokalnie. Do ustalenia pozostają domena (`SITE_URL`), konto/projekt Cloudflare i biznesowe materiały wskazane w README. Automatyczne publikowanie zacznie działać dopiero po świadomym skonfigurowaniu integracji i wybraniu gałęzi w Cloudflare.
+
+## Aktualizacja — domena sqoonays.pl
+
+Użytkownik potwierdził zakup domeny w OVH. W `.env.example` przygotowano `SITE_URL=https://sqoonays.pl`; README i `docs/CLOUDFLARE.md` opisują konkretną domenę i ręczne połączenie OVH → strefa Cloudflare → Worker Custom Domain. Plik przykładowy nie ustawia automatycznie zmiennej budowania w Cloudflare.
+
+Wykonano `pnpm cf:check` z procesową zmienną `SITE_URL=https://sqoonays.pl`: check 25 plików bez błędów i ostrzeżeń, statyczny build, verify (canonical/sitemap/OG/JSON-LD dla tej domeny, brak 404 w sitemap) oraz Wrangler dry-run — sukces. Końcowe `dist/` pochodzi z tego builda dla domeny produkcyjnej; nie jest dowodem jej działania w internecie. Lokalnie nie utworzono `.env`. Nie zmieniono DNS, nameserverów, ustawień konta OVH ani Cloudflare, nie wykonano push lub publikacji.
+
+Publiczne zapytania DNS w czasie kontroli wskazały nameservery OVH. Przyłączenie do Cloudflare, certyfikat HTTPS i przekierowanie www wymagają wykonania instrukcji przez użytkownika. Pozostałe materiały i fakty biznesowe nadal wymagają potwierdzenia według README.
+
+## Aktualizacja — zdjęcie salonu i portfolio, 01.11.2026
+
+Dodano dostarczone `IMG_1505.jpeg` jako lokalne `src/assets/salon/interior.jpg`: hero i pierwszy element galerii. Dodatkowo pobrano po jednym zdjęciu realizacji z publicznych postów `@sqoonaybarbershop` (C69KGwmorG6) i `@domi.nika_hair` (C5eIdVmrPgR). Użytkownik ponownie potwierdził zgody. Źródła i zakres wykorzystania zapisano w `src/assets/SOURCES.md`. Posty tagują poprzednie miejsce pracy, dlatego galeria opisuje je jako wcześniejsze portfolio, a nie realizacje sfotografowane na Mylnej. Nie dodano niepotwierdzonej indywidualnej atrybucji Patryka.
+
+Zmieniono dane mediów, podpisy i tekst galerii, rozmiary obrazów oraz kadr CSS hero. Fotografia wnętrza w galerii ma poziomy kadr. Domyślny `src` ograniczono do 1080 px, w hero do 1440 px; zachowano srcset, lazy loading poza hero i wysoki priorytet hero. Źródłowe fotografie nie były retuszowane ani modyfikowane generatywnie.
+
+- `pnpm cf:check` z `SITE_URL=https://sqoonays.pl`: sukces. Astro check 25 plików, 0 błędów/ostrzeżeń/wskazówek; build, verify i Wrangler dry-run zakończone sukcesem.
+- Kontrola wynikowego HTML: sześć lokalnych elementów img, poprawne opisy alt i srcset, wszystkie wskazane warianty WebP istnieją, brak renderowanych placeholderów zdjęć.
+- Kontrola Sharp metadata: 13 wygenerowanych wariantów wnętrza i portfolio bez źródłowych danych EXIF. Zdjęcie wnętrza ma warianty od około 10 KB do 130 KB zamiast 2,6 MB oryginału.
+- Nie zmieniono zależności, więc instalacji nie ponawiano. Zachowano zastane lokalne zmiany dokumentacji i konfiguracji domeny.
+- Publiczne profile i pobrane fotografie obejrzano. Nie ponawiano wcześniej zablokowanego dostępu przeglądarki do lokalnego podglądu. Ostateczne kadry strony na mobile i desktopie pozostają do ręcznego obejrzenia przez `pnpm dev`.
+
+Nie wykonano commit/push ani publikacji. Dalsze nierozstrzygnięte dane biznesowe pozostają wskazane w README.

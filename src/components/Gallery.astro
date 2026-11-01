@@ -6,8 +6,8 @@ import Arrow from './Arrow.astro';
 ---
 <section id="galeria" class="section gallery" aria-labelledby="gallery-title">
   <div class="container">
-    <div class="section-heading"><div><p class="eyebrow">04 / GALERIA</p><h2 id="gallery-title">Miejsce na <span class="serif-emphasis">nasz klimat.</span></h2></div><a href={business.links.instagram} class="text-link">Zajrzyj na Instagram <Arrow diagonal /></a></div>
-    <p class="gallery-note">Tu pojawią się zdjęcia salonu i naszych prac. Czekamy na autorskie materiały do publikacji.</p>
-    <div class="gallery-grid">{gallery.map((item) => <figure><PhotoFrame label={item.label} number={item.number} photo={photos[item.key]} /><figcaption><span>{item.label}</span><span aria-hidden="true">/{item.number}</span></figcaption></figure>)}</div>
+    <div class="section-heading"><div><p class="eyebrow">04 / GALERIA</p><h2 id="gallery-title">Salon i <span class="serif-emphasis">nasze prace.</span></h2></div><a href={business.links.instagram} class="text-link">Zajrzyj na Instagram <Arrow diagonal /></a></div>
+    <p class="gallery-note">Wnętrze na Mylnej i wybrane wcześniejsze realizacje z portfolio. Zobacz detale i znajdź inspirację dla siebie.</p>
+    <div class="gallery-grid">{gallery.map((item) => <figure><PhotoFrame label={item.label} number={item.number} photo={photos[item.key]} sizes={item.key === 'interior' ? '(min-width: 600px) 35vw, 100vw' : '(min-width: 600px) 26vw, 45vw'} /><figcaption>{item.sourceUrl ? <a href={item.sourceUrl} aria-label={`${item.label} — zobacz oryginalny post na Instagramie`}>{item.label}<span aria-hidden="true"> ↗</span></a> : <span>{item.label}</span>}<span aria-hidden="true">/{item.number}</span></figcaption></figure>)}</div>
   </div>
 </section>

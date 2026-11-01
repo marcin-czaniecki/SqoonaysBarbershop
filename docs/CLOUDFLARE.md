@@ -36,7 +36,7 @@ W panelu Cloudflare przejdź do **Workers & Pages**, rozpocznij tworzenie aplika
 | Deploy command | `pnpm exec wrangler deploy` |
 | Node | Z `.node-version`: `24.22.1` |
 | pnpm | Z `packageManager`: `pnpm@9.5.0` |
-| Build variable `SITE_URL` | Zatwierdzony adres HTTPS, sam origin; na tym etapie może pozostać puste dla wersji testowej `noindex` |
+| Build variable `SITE_URL` | `https://sqoonays.pl` dla produkcji; puste dla wersji testowej `noindex` |
 
 `assets.directory = "./dist"` jest już zapisane w konfiguracji. To **Workers Static Assets**, nie projekt Pages — pole „Build output directory” z instrukcji Pages nie zastępuje tutaj `wrangler.jsonc`.
 
@@ -60,7 +60,23 @@ Po wybraniu domeny:
 
 Jeśli produkcją ma pozostać adres `workers.dev`, ustaw `SITE_URL` na ten **faktyczny** adres po potwierdzeniu, że ma być indeksowany.
 
-## Lokalna kontrola przed publikacją
+## Domena sqoonays.pl zakupiona w OVH
+
+Docelowy adres produkcji: **https://sqoonays.pl**, bez `www`. Użytkownik potwierdził zakup domeny w OVH. Poniższe kroki wykonuje właściciel w panelach dostawców — repozytorium nie zmienia delegacji DNS ani konfiguracji kont.
+
+1. W Cloudflare na tym samym koncie co Worker dodaj domenę `sqoonays.pl` jako strefę DNS (Add a domain / Onboard a domain) i wybierz plan Free, jeżeli odpowiada Twoim potrzebom. Nie przenosisz rejestracji ani płatności za domenę z OVH.
+2. Sprawdź zaimportowane rekordy DNS względem strefy OVH. Jeżeli korzystasz z poczty lub innych usług pod domeną, zachowaj ich rekordy MX/TXT/DKIM i odpowiednie rekordy subdomen — skan Cloudflare może nie odtworzyć całej strefy. Jeśli panel zgłasza istniejący DNSSEC, wykonaj oficjalną procedurę migracji przed zmianą delegacji.
+3. Cloudflare wyświetli **konkretną parę serwerów nazw dla tej strefy**. Skopiuj dokładnie te wartości; nie używaj przykładów z poradników.
+4. W OVH przejdź do domeny `sqoonays.pl` → **Serwery DNS** → modyfikacja serwerów. Zastąp dotychczasowe serwery dwoma wskazanymi przez Cloudflare. To zmiana serwerów DNS domeny, a nie dodanie rekordów NS w zakładce „Strefa DNS”. Poczekaj, aż strefa w Cloudflare uzyska status **Active**.
+5. W Cloudflare otwórz **Workers & Pages → sqoonays-barbershop → Settings → Domains & Routes → Add → Custom Domain**. Wpisz **`sqoonays.pl`**, bez `https://` i bez `/*`. Potwierdź podłączenie. Cloudflare tworzy rekord DNS i obsługuje certyfikat TLS dla Custom Domain. Jeśli importowany rekord dla tego samego hosta powoduje konflikt, sprawdź go przed zastąpieniem; nie kasuj całej strefy ani rekordów pocztowych. Nie wpisuj ręcznie adresu IP Workera.
+6. W **Settings → Builds → Build variables and secrets** dodaj zwykłą zmienną `SITE_URL` o wartości **`https://sqoonays.pl`**. To zmienna budowania, nie `Variables & Secrets` dla runtime. Uruchom ponowny build/deploy po podłączeniu domeny. Nowy build ma canonical, OG i sitemap dla `sqoonays.pl` oraz dopuszcza indeksowanie.
+7. Sprawdź `https://sqoonays.pl/`, `/robots.txt`, `/sitemap-index.xml` i nieistniejącą ścieżkę. Dla `www.sqoonays.pl` przygotuj osobno przekierowanie 301/308 do `https://sqoonays.pl`, z zachowaniem ścieżki i query string; docelowe DNS i HTTPS wariantu `www` także muszą być obsłużone. Sam canonical nie wykonuje przekierowania.
+
+Odczyt publicznego DNS 31.10.2026 podczas przygotowania: serwery `dns103.ovh.net` i `ns103.ovh.net`, rekord A domeny `213.186.33.5`, TXT `1|www.sqoonays.pl` i `v=spf1 -all`. Zapytanie MX nie zwróciło rekordów pocztowych; nie jest to pełny audyt strefy. Są to obserwacje, nie wartości do kopiowania do nowej konfiguracji. DNS nie został zmieniony.
+
+Źródła: [Cloudflare — dodanie domeny i zmiana nameserverów](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/), [Workers Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/), [OVH — zmiana serwerów DNS](https://docs.ovhcloud.com/pl/guides/web-cloud/domains/dns-server-edit).
+
+## Komendy lokalne
 
 ```sh
 pnpm install --frozen-lockfile

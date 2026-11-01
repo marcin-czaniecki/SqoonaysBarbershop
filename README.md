@@ -46,15 +46,17 @@ TypeScript 6 jest celowo zgodny z zakresem wspieranym przez `@astrojs/check`; Ty
 
 Portrety Patryka i Dominiki pobrano z podpisanych kart pracowników na oficjalnym Booksy salonu po potwierdzeniu przez użytkownika zgody na wykorzystanie (31.10.2026). Pliki są lokalne w `src/assets/team/`; źródła i zakres potwierdzenia zapisano w `src/assets/team/SOURCES.md`. Astro generuje responsywne obrazy WebP. Nie ma hotlinkowania ani pobierania zdjęć z Booksy podczas przeglądania strony.
 
-Pozostałe kompozycje zastępcze są wykonane w CSS i opisane „Miejsce na zdjęcie”. Nie użyto fotografii innych salonów. Monogram to dekoracja, nie zatwierdzone logo.
+Zdjęcie wnętrza w hero i galerii pochodzi z załącznika użytkownika `IMG_1505.jpeg` (01.11.2026). Dwa zdjęcia realizacji pobrano z publicznych postów `@sqoonaybarbershop` i `@domi.nika_hair` po ponownym potwierdzeniu zgód. Są podpisane jako wcześniejsze portfolio — posty wskazują poprzednie miejsce pracy, więc nie przedstawiamy ich jako zdjęć wykonanych na Mylnej. Źródła są w `src/assets/SOURCES.md`, a podpisy galerii prowadzą do oryginalnych postów. Wszystkie fotografie są lokalne; strona nie ładuje zdjęć ani skryptów z Instagrama.
+
+Hero, portrety i galeria mają już rzeczywiste zdjęcia. Komponent nadal obsługuje jawny placeholder CSS po ustawieniu zdjęcia na `null`. Tymczasowy wordmark nie jest zatwierdzonym logo.
 
 Po otrzymaniu zdjęć z prawem do publikacji:
 
 1. Umieść je w `src/assets/` (utwórz katalog). Użyj oryginałów o sensownej rozdzielczości, bez zbędnych metadanych lokalizacji.
 2. Importuj plik w `src/data/media.ts`, np. `import interior from '../assets/interior.jpg';`.
 3. Zmień właściwe `null` na `{ image: interior, alt: 'Rzeczowy opis tego, co faktycznie przedstawia zdjęcie' }`.
-4. Komponent `PhotoFrame.astro` wykorzysta Astro `Image`, szerokości 320/480/768/1080, `srcset`, rozmiary obrazu oraz lazy loading (hero ma wysoki priorytet). Dobierz kadry i `sizes` do finalnych materiałów, sprawdź na telefonie.
-5. Gdy galeria zawiera już prawdziwe materiały, zaktualizuj jej nagłówek i notkę w `Gallery.astro`.
+4. Komponent `PhotoFrame.astro` wykorzystuje Astro `Image`, warianty do 1080 px (hero do 1440 px), `srcset`, rozmiary obrazu i lazy loading. Hero jest ładowane od razu z wysokim priorytetem; jego kadr CSS eksponuje stanowiska. Domyślny `src` również ma ograniczoną szerokość.
+5. Przy kolejnych zdjęciach aktualizuj podpisy i źródła w `src/data/media.ts` oraz `src/assets/SOURCES.md`. Sprawdź kadry na telefonie i desktopie.
 
 Fonty Manrope i Barlow Condensed są serwowane lokalnie z pakietów Fontsource na licencji OFL-1.1; licencje znajdują się w odpowiednich pakietach. Bez zewnętrznych zapytań do Google Fonts. Po zmianie grafiki OG uruchom `pnpm generate:og` (używa procesora Sharp dostarczanego z Astro), następnie build i verify.
 
@@ -63,16 +65,16 @@ Fonty Manrope i Barlow Condensed są serwowane lokalnie z pakietów Fontsource n
 - Wszystkie usługi, ceny i czasy z odczytu 31.10.2026; po akceptacji ustaw `serviceReview.confirmed` na `true` i zaktualizuj datę.
 - Obecność Patryka i Dominiki oraz oficjalne linki; po akceptacji ustaw `teamConfirmed` na `true`.
 - Oficjalne logo, kolory i typografia; obecny kierunek wizualny jest propozycją.
-- Zdjęcia wnętrza i prac, prawa do publikacji i ewentualne zgody osób. Zgoda na wykorzystanie dwóch portretów zespołu została potwierdzona w czacie.
+- Dalsze zdjęcia i ewentualne materiały marki. Wnętrze oraz obecne zdjęcia portfolio i zespołu mają potwierdzenie zgody użytkownika w czacie; dla kolejnych materiałów zachowaj taki sam sposób dokumentacji źródeł.
 - Autentyczny opis salonu od właściciela. Obecny tekst jest neutralny i oparty na specyfikacji.
 - Numer telefonu, godziny dla każdego dnia, status działalności i e-mail, jeżeli mają być publikowane. Do tego czasu pola są pominięte, także w JSON-LD.
-- Docelowa domena i treści prawne adekwatne do faktycznej konfiguracji hostingu.
+- Przyłączenie potwierdzonej domeny `sqoonays.pl` do Cloudflare oraz treści prawne adekwatne do faktycznej konfiguracji hostingu.
 
 Nie dodawaj fikcyjnych ocen, opinii, wyróżnień ani niepotwierdzonych specjalizacji.
 
 ## Domena i SEO
 
-Skopiuj `.env.example` do `.env` i **po zatwierdzeniu domeny** ustaw `SITE_URL` na jej pełny adres HTTPS (sam origin, bez ścieżki). Zmienna nie jest sekretem. Astro odczytuje ją podczas budowania, więc zmiana wymaga nowego builda.
+Docelowa domena potwierdzona przez użytkownika: **https://sqoonays.pl** (rejestrator OVH). Dla produkcji ustaw `SITE_URL=https://sqoonays.pl` w zmiennych **budowania** Cloudflare. `.env.example` zawiera tę wartość; lokalnie możesz skopiować go do `.env`. Zmienna nie jest sekretem. Astro odczytuje ją podczas budowania, więc zmiana wymaga nowego builda. Plik `.env.example` sam nie ustawia zmiennych w panelu Cloudflare. Przyłączenie DNS i domeny nie zostało wykonane w ramach zmian w kodzie; instrukcja jest w `docs/CLOUDFLARE.md`.
 
 Bez `SITE_URL` strona ma `noindex, nofollow`, robots.txt z `Disallow: /`, bez canonical i bez mapy witryny. Nie tworzymy fikcyjnej domeny. Z ustawionym `SITE_URL` powstają canonical, absolutne adresy OG, `sitemap-index.xml`, `sitemap-0.xml` oraz robots.txt dopuszczający indeksowanie. **Nie ustawiaj domeny produkcyjnej dla publicznego środowiska testowego.** `noindex` nie jest kontrolą dostępu.
 

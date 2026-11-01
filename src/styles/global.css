@@ -95,6 +95,7 @@ h1 span { color: #84663d; }
 .frame-caption { position: absolute; bottom: 1.9rem; left: 2rem; right: 2rem; display: flex; flex-direction: column; gap: .4rem; font-size: .57rem; color: #c0baad; }
 .frame-caption-label { font-size: .61rem; color: #e8dfd0; font-weight: 600; }
 .hero-photo { height: 100%; min-height: 518px; }
+.hero-photo > img { object-position: 52% 100%; transform: scale(1.22); transform-origin: 52% 100%; }
 .hero-side-note { position: absolute; right: -.4rem; top: 0; writing-mode: vertical-rl; font-size: .48rem; font-weight: 600; letter-spacing: .18em; }
 .location-tag { position: absolute; right: 0; bottom: 0; padding: 1.1rem 1.8rem; background: #c9ac7d; display: flex; align-items: center; gap: 1.4rem; font-size: .59rem; line-height: 1.7; }
 .location-tag > span:first-child { font-size: 2rem; font-weight: 400; }
@@ -154,7 +155,7 @@ details[open] > summary .details-symbol::after { transform: rotate(0); }
 .gallery-grid figure:nth-child(2) { margin-top: 3.5rem; }
 .gallery-grid figure:nth-child(3) { margin-top: 7rem; }
 .gallery-grid .photo-frame { aspect-ratio: 4 / 5; }
-.gallery-grid figure:first-child .photo-frame { background: #36332d; }
+.gallery-grid figure:first-child .photo-frame { background: #36332d; aspect-ratio: 4 / 3; }
 .gallery-grid figure:last-child .photo-frame { background: #3b3d35; }
 .gallery-grid .frame-art { border-radius: 0; inset: 20% 18% 25%; transform: rotate(-7deg); }
 .gallery-grid .frame-art > span { font-size: 6rem; }
@@ -162,6 +163,8 @@ details[open] > summary .details-symbol::after { transform: rotate(0); }
 .gallery-grid figure:nth-child(3) .frame-art { border-radius: 50% 50% 0 0; transform: none; }
 .gallery-grid figcaption { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1rem; font-size: .64rem; font-weight: 600; }
 .gallery-grid figcaption > span:last-child { color: var(--muted); font-size: .55rem; }
+.gallery-grid figcaption a { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; margin-top: -.8rem; }
+.gallery-grid figcaption a:hover { text-decoration: underline; }
 
 /* Address and footer. */
 .contact { background: #c9ac7d; }
