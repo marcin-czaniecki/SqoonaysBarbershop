@@ -2,8 +2,7 @@
 import { business } from '../data/business';
 import { social } from '../data/social';
 import socialImage from '../data/social-image.json';
-import '@fontsource/barlow-condensed/latin-ext-600.css';
-import '@fontsource/barlow-condensed/latin-600.css';
+import { Font } from 'astro:assets';
 import '../styles/global.css';
 
 interface Props { title?: string; noindex?: boolean; }
@@ -33,6 +32,8 @@ const structuredData = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Font cssVariable="--font-barlow" preload />
+    <Font cssVariable="--font-manrope" preload />
     <title>{title}</title>
     <meta name="description" content={business.seo.description} />
     <meta name="theme-color" content="#f1eee8" />

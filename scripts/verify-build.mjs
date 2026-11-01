@@ -21,6 +21,30 @@ assert.ok(html.includes('https://www.instagram.com/sqoonaybarbershop/'));
 assert.ok(html.includes('https://www.google.com/maps/dir/?api=1'));
 assert.equal(/<script[^>]+src="https?:/i.test(html), false, 'No third-party scripts');
 
+// Guard the loading regressions identified by the PageSpeed audit.
+assert.doesNotMatch(html, /<link[^>]+rel="stylesheet"/, 'Small page CSS is inlined without a render-blocking request');
+assert.match(html, /size-adjust:/, 'Web fonts include metric-adjusted local fallbacks');
+assert.match(html, /ascent-override:/, 'Font fallbacks reserve matching vertical metrics');
+const fontPreloads = [...html.matchAll(/<link[^>]+href="([^\"]+)"[^>]+as="font"/g)];
+assert.equal(fontPreloads.length, 4, 'Both local font families preload Latin and Polish subsets');
+for (const [, path] of fontPreloads) await access(`dist${path}`);
+const activeHtml = html.replace(/<(template|noscript)\b[^>]*>[\s\S]*?<\/\1>/g, '');
+assert.doesNotMatch(activeHtml, /<iframe\b/i, 'Google Maps must wait until its section approaches the viewport');
+assert.match(html, /<template><iframe[^>]+title="Mapa Google/);
+assert.match(html, /<noscript><iframe[^>]+title="Mapa Google/);
+const pictures = [...html.matchAll(/<picture[^>]*>([\s\S]*?)<\/picture>/g)];
+assert.equal(pictures.length, 6, 'Hero, portraits and gallery retain their photos');
+for (const [, picture] of pictures) {
+  assert.match(picture, /type="image\/avif"/);
+  assert.match(picture, /<img[^>]+width="\d+"[^>]+height="\d+"/);
+  for (const [, srcset] of picture.matchAll(/srcset="([^\"]+)"/g)) {
+    for (const candidate of srcset.split(',')) await access(`dist${candidate.trim().split(/\s+/)[0]}`);
+  }
+}
+const inlineScripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)]
+  .filter(([, attributes]) => !attributes.includes('application/ld+json'));
+assert.ok(inlineScripts.reduce((bytes, [, , code]) => bytes + Buffer.byteLength(code), 0) < 2048, 'Inline page JavaScript stays below 2 KiB');
+
 const jsonText = html.match(/<script\s+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/)?.[1];
 assert.ok(jsonText, 'Local business structured data exists');
 const schema = JSON.parse(jsonText);
@@ -34,12 +58,14 @@ if (canonical) {
   const origin = new URL(canonical);
   assert.equal(origin.protocol, 'https:');
   assert.equal(schema.url, origin.href);
-  assert.match(html, /content="index, follow"/);
+  assert.match(html, /name="robots"\s+content="index, follow"/);
+  assert.doesNotMatch(html, /noindex/i, 'Production homepage must not block indexing');
   assert.ok(robots.includes(`Sitemap: ${new URL('sitemap-index.xml', origin).href}`));
   const sitemap = await readFile('dist/sitemap-0.xml', 'utf8');
   assert.ok(sitemap.includes(origin.href));
   assert.equal(sitemap.includes('/404'), false, '404 page excluded from sitemap');
   assert.equal(robots.includes('Disallow: /'), false);
+  assert.match(robots, /User-agent: \*\s+Allow: \//);
 } else {
   assert.match(html, /content="noindex, nofollow"/);
   assert.match(robots, /Disallow: \//);
@@ -70,4 +96,4 @@ const notFound = await readFile('dist/404.html', 'utf8');
 assert.match(notFound, /content="noindex, nofollow"/);
 assert.match(notFound, /href="\/"/);
 await access('dist/_headers');
-console.log(`Build verified: Polish page, H1, anchors, local assets, booking links, JSON-LD, OG, ${canonical ? 'production canonical and sitemap' : 'noindex without domain'}.`);
+console.log(`Build verified: Polish page, H1, anchors, local assets, booking links, JSON-LD, OG, ${canonical ? 'indexable production canonical and sitemap' : 'explicit noindex preview'}.`);

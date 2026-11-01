@@ -113,3 +113,40 @@ Layout ma odrębny krótki tytuł i opis udostępniania, og:url, absolutny HTTPS
 - `git diff --check`: kod 0. Zachowano zastane zmiany ikon. Nie wykonano instalacji, commit/push ani publikacji.
 
 Ograniczenie: publiczna domena sqoonays.pl nie rozwiązywała się przez używany resolver podczas próby odczytu strony. Nie potwierdzono pobrania karty z produkcji ani wyglądu w konkretnym komunikatorze. Po wdrożeniu domena i obraz muszą być publicznie dostępne; odświeżenie starszego podglądu może wymagać ponownego pobrania przez daną platformę. Instrukcja znajduje się w README.
+
+## Odblokowanie indeksowania — 01.11.2026
+
+Na życzenie właściciela domyślny build używa potwierdzonej domeny `https://sqoonays.pl`, także przy brakującym lub pustym `SITE_URL`. Blokadę kopii testowej włącza teraz wyłącznie jawne `SITE_NOINDEX=true`. Dokumentacja i przykład zmiennych opisują nowe zachowanie; 404 pozostaje noindex.
+
+- `pnpm install --frozen-lockfile`: sukces, zależności aktualne, bez zmiany lockfile.
+- `pnpm build` i `pnpm verify` z `SITE_NOINDEX=true` i pustym `SITE_URL`: sukces; noindex, robots Disallow, brak canonical i sitemap.
+- `pnpm cf:check` bez `SITE_URL` i `SITE_NOINDEX`: sukces. Astro check 27 plików, 0 błędów/ostrzeżeń/wskazówek; build, verify i Wrangler dry-run poprawne.
+- Końcowe `dist/index.html`: `index, follow`, canonical `https://sqoonays.pl/`; `dist/robots.txt`: `Allow: /` i `Sitemap: https://sqoonays.pl/sitemap-index.xml`. Sitemap zawiera stronę główną, pomija 404. Verify odrzuca noindex w produkcyjnym HTML.
+- Publiczny odczyt domeny nie powiódł się: lokalny resolver zwrócił „Nieznany host”, a narzędzie WWW nie mogło odczytać strony ani robots.txt. Nie potwierdzono stanu wdrożenia. Nie wykonano commit/push, publikacji ani zmian DNS lub Search Console.
+
+Następny krok: wdrożyć zmiany; w produkcyjnych build variables Cloudflare usunąć `SITE_NOINDEX` lub ustawić `false`. Po wdrożeniu sprawdzić publiczny HTML/robots/sitemap i zgłosić sitemap w Search Console. Ten raport opisuje kontrole kodu i builda, nie potwierdza indeksacji w Google.
+
+## Poprawki po PageSpeed Insights — 01.11.2026
+
+Uruchomiono publiczny raport mobilny: [PageSpeed Insights — sqoonays.pl](https://pagespeed.web.dev/analysis/https-sqoonays-pl/c3yc82xmpa?form_factor=mobile). Raport z 18:00 CET dla dotychczasowej opublikowanej wersji: wydajność 91, dostępność 100, dobre praktyki 100, SEO 66; FCP 0,8 s, LCP 1,4 s, TBT 30 ms, CLS 0,198. Raport potwierdził blokadę przez meta robots i robots.txt, 236 KiB nieużywanego JS mapy Google i 14 KiB potencjalnej oszczędności obrazu portfolio Dominiki. Te wartości opisują wersję sprzed lokalnych zmian, a nie ich wynik.
+
+Zmiany:
+
+- Fonty przeniesiono do lokalnego providera Astro: preload czterech plików WOFF2, zakresy Latin/Latin Ext, metryki zastępczego Arial (`size-adjust`, ascent/descent/line gap). Ogranicza to zmianę wymiarów tekstu w hero po pobraniu fontów. Źródło: [Astro — lokalne fonty i dopasowane fallbacki](https://docs.astro.build/en/guides/fonts/).
+- Mały CSS strony jest osadzony w HTML; końcowy build nie zawiera żądania zewnętrznego arkusza blokującego renderowanie.
+- Zdjęcia korzystają z `<picture>` i AVIF 40 / WebP 65, z dodatkowymi rozmiarami 240/640 px. Przykładowe AVIF 640 px: wnętrze 11634 bajty, portfolio Dominiki 21786 bajtów. Dwa obrazy sprawdzono wizualnie po zdekodowaniu. Nie jest to porównanie identycznego rozmiaru do zasobu 43,7 KiB z PSI.
+- Mapa ładuje się automatycznie do 200 px przed sekcją kontaktu, z nieaktywnego template; bez JS działa noscript. Stała wysokość 280 px i link dojazdu zachowane. Nagłówków cache ani kodu Google wewnątrz iframe nie zmieniamy; ich koszt powróci po wyświetleniu mapy.
+- Dla wersjonowanych kart social dodano roczny immutable cache; fonty i zdjęcia korzystają z istniejącego cache `/_astro/*`. HTML i robots pozostają odświeżalne.
+- Zachowano poprawkę domyślnego indeksowania produkcji z poprzedniego zadania. Publiczny raport nadal odczytywał starszą, zablokowaną wersję.
+
+Kontrole:
+
+- `pnpm install --frozen-lockfile`: sukces, bez zmian zależności/lockfile.
+- `pnpm check`, `pnpm build`, `pnpm verify` oraz końcowe `pnpm cf:check`: sukces; Astro 27 plików, 0 błędów/ostrzeżeń/wskazówek, Wrangler dry-run 90 plików.
+- Verify sprawdza dodatkowo font preload/metryki, sześć zdjęć AVIF z WebP, istnienie wszystkich wariantów srcset, brak aktywnego iframe przed przewinięciem, noscript i budżet inline JS poniżej 2 KiB. Końcowy kod JS strony: 688 bajtów. Kontrola HTML nie zastępuje testu uruchomienia observera w przeglądarce.
+- `pnpm cf:preview` i HTTP: strona 200 z index/follow i canonical dla sqoonays.pl, bez X-Robots-Tag; font WOFF2, zdjęcie AVIF i karta social 200 z właściwym MIME i rocznym immutable cache. Robots i obie mapy witryny 200; nieistniejąca ścieżka 404. Serwery QA zatrzymano, tymczasowy skrypt testowy usunięto.
+- `git diff --check`: sukces.
+
+Ograniczenie: po otrzymaniu nowej zgody użytkownika próba lokalnego podglądu nadal została odrzucona przez zapisaną politykę uprawnień przeglądarki. Nie obchodzono blokady. Nie wykonano mobilnego/desktopowego testu renderowania ani pomiaru CLS po zmianach; tymczasowy plan testu z opóźnionymi fontami nie doszedł do pomiaru. Przywrócono domyślny viewport przeglądarki. Nie wykonano commit/push, publikacji, zmian DNS ani Search Console.
+
+Następny krok: wdrożyć zmiany, a następnie ponowić PSI mobile i desktop, sprawdzić CLS oraz przewijanie do widocznej mapy. Nowego wyniku PageSpeed nie deklarujemy przed takim pomiarem.

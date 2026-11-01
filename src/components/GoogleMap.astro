@@ -1,15 +1,43 @@
 ---
 import { business } from '../data/business';
+import Icon from './Icon.astro';
+const frameAttributes = {
+  src: business.links.mapEmbed,
+  title: `Mapa Google — ${business.address.street}, ${business.address.city}`,
+  width: '600',
+  height: '280',
+  loading: 'lazy' as const,
+  referrerpolicy: 'no-referrer' as const,
+  allowfullscreen: true,
+};
 ---
 <figure class="contact-map">
-  <iframe
-    src={business.links.mapEmbed}
-    title={`Mapa Google — ${business.address.street}, ${business.address.city}`}
-    width="600"
-    height="280"
-    loading="lazy"
-    referrerpolicy="no-referrer"
-    allowfullscreen
-  ></iframe>
+  <div class="map-viewport" data-map-host>
+    <div class="map-placeholder" aria-hidden="true"><Icon name="location_on" size={32} /><span>{business.address.street}, {business.address.city}</span></div>
+    <template><iframe {...frameAttributes}></iframe></template>
+    <noscript><iframe {...frameAttributes}></iframe></noscript>
+  </div>
   <figcaption>Mapa Google · {business.address.street}, {business.address.city}</figcaption>
 </figure>
+<script>
+  // Native iframe lazy loading may start several screens early on a slow connection.
+  document.querySelectorAll<HTMLElement>('[data-map-host]').forEach((host) => {
+    const template = host.querySelector<HTMLTemplateElement>('template');
+    const loadMap = () => {
+      if (!template?.isConnected) return;
+      host.append(template.content.cloneNode(true));
+      template.remove();
+    };
+    if (!('IntersectionObserver' in window)) {
+      loadMap();
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        loadMap();
+        observer.disconnect();
+      }
+    }, { rootMargin: '200px 0px' });
+    observer.observe(host);
+  });
+</script>

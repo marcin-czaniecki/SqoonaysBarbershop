@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import type { Photo } from '../data/media';
 interface Props {
   label: string;
@@ -11,9 +11,30 @@ interface Props {
   sizes?: string;
 }
 const { label, number = '01', monogram = 'S', class: className = '', photo = null, eager = false, sizes = '(min-width: 900px) 50vw, 100vw' } = Astro.props;
+async function optimizePhoto(photo: Photo) {
+  const options = {
+    src: photo.image,
+    alt: photo.alt,
+    width: Math.min(photo.image.width, eager ? 1440 : 1080),
+    widths: eager ? [320, 480, 640, 768, 1080, 1440] : [240, 320, 480, 640, 768, 1080],
+    sizes,
+    loading: eager ? 'eager' as const : 'lazy' as const,
+    fetchpriority: eager ? 'high' as const : 'auto' as const,
+  };
+  // Encoder quality scales differ; AVIF needs a lower value than WebP.
+  const [avif, webp] = await Promise.all([
+    getImage({ ...options, format: 'avif', quality: 40 }),
+    getImage({ ...options, format: 'webp', quality: 65 }),
+  ]);
+  return { avif, webp };
+}
+const images = photo ? await optimizePhoto(photo) : null;
 ---
 <div class:list={['photo-frame', className, { 'photo-frame--filled': photo }]}>
-  {photo ? <Image src={photo.image} alt={photo.alt} width={Math.min(photo.image.width, eager ? 1440 : 1080)} widths={eager ? [480, 768, 1080, 1440] : [320, 480, 768, 1080]} sizes={sizes} loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} /> : <>
+  {images ? <picture>
+    <source type="image/avif" srcset={images.avif.srcSet.attribute} sizes={sizes} />
+    <img src={images.webp.src} {...images.webp.attributes} srcset={images.webp.srcSet.attribute} sizes={sizes} />
+  </picture> : <>
     <span class="frame-index" aria-hidden="true">{number} / SQOONAY’S</span>
     <div class="frame-art" aria-hidden="true"><span>{monogram}</span></div>
     <div class="frame-caption"><span class="frame-caption-label">{label}</span><span>Miejsce na zdjęcie</span></div>

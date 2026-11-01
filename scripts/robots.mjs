@@ -11,7 +11,7 @@ export default function robots() {
         await writeFile(new URL('robots.txt', dir), site
           ? `User-agent: *\nAllow: /\n\nSitemap: ${new URL('sitemap-index.xml', site).href}\n`
           : 'User-agent: *\nDisallow: /\n');
-        if (!site) logger.warn('SITE_URL is not configured. Build is noindex; canonical and sitemap are intentionally omitted.');
+        if (!site) logger.warn('SITE_NOINDEX=true. Preview build is noindex; canonical and sitemap are intentionally omitted.');
       },
       'astro:config:done': ({ config }) => { site = config.site; },
     },

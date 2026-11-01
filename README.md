@@ -59,10 +59,10 @@ Po otrzymaniu zdjęć z prawem do publikacji:
 1. Umieść je w `src/assets/` (utwórz katalog). Użyj oryginałów o sensownej rozdzielczości, bez zbędnych metadanych lokalizacji.
 2. Importuj plik w `src/data/media.ts`, np. `import interior from '../assets/interior.jpg';`.
 3. Zmień właściwe `null` na `{ image: interior, alt: 'Rzeczowy opis tego, co faktycznie przedstawia zdjęcie' }`.
-4. Komponent `PhotoFrame.astro` wykorzystuje Astro `Image`, warianty do 1080 px (hero do 1440 px), `srcset`, rozmiary obrazu i lazy loading. Hero jest ładowane od razu z wysokim priorytetem; jego kadr CSS eksponuje stanowiska. Domyślny `src` również ma ograniczoną szerokość.
+4. Komponent `PhotoFrame.astro` wykorzystuje Astro `getImage` i `<picture>`: AVIF (jakość 40) oraz WebP (jakość 65) dla przeglądarek bez AVIF. Generuje `srcset` od 240 px do 1080 px (hero od 320 px do 1440 px), deklaruje rozmiary obrazu i lazy loading. Hero jest ładowane od razu z wysokim priorytetem; jego kadr CSS eksponuje stanowiska. Zdjęcia nie mają podwójnego pobierania: przeglądarka wybiera właściwy format i rozmiar.
 5. Przy kolejnych zdjęciach aktualizuj podpisy i źródła w `src/data/media.ts` oraz `src/assets/SOURCES.md`. Sprawdź kadry na telefonie i desktopie.
 
-Fonty Manrope i Barlow Condensed są serwowane lokalnie z pakietów Fontsource na licencji OFL-1.1; licencje znajdują się w odpowiednich pakietach. Bez zewnętrznych zapytań do Google Fonts.
+Fonty Manrope i Barlow Condensed są serwowane lokalnie z pakietów Fontsource na licencji OFL-1.1; licencje znajdują się w odpowiednich pakietach. Konfiguracja `fonts` w Astro używa lokalnego providera, poprawnych zakresów Latin/Latin Ext (w tym polskich znaków), dopasowanych metryk fontów zastępczych oraz preload w `Layout.astro`. Fonty nie są pobierane z zewnętrznych serwisów podczas budowania ani przeglądania. Niewielki CSS strony jest osadzony w HTML, żeby uniknąć dodatkowego żądania blokującego renderowanie.
 
 Ikony interfejsu pochodzą z [Google Material Symbols](https://fonts.google.com/icons), wariant **Outlined**. Dziewięć potrzebnych SVG jest zapisanych lokalnie w `src/assets/icons/material-symbols/`; wspólny, typowany komponent `Icon.astro` składa je bez fontu ikon i dodatkowego JavaScriptu. Pliki źródłowe i przypiętą rewizję opisano w `SOURCES.md` obok ikon. Licencja Apache 2.0 jest dołączona do repozytorium i wynikowego builda w `public/licenses/material-symbols-LICENSE.txt`. Strzałka w grafice OG również pochodzi z tego zestawu. Oznaczenia menu/zamknięcia i plus/minus przełączają się przez CSS oraz natywny stan `details`.
 
@@ -80,9 +80,9 @@ Nie dodawaj fikcyjnych ocen, opinii, wyróżnień ani niepotwierdzonych specjali
 
 ## Domena i SEO
 
-Docelowa domena potwierdzona przez użytkownika: **https://sqoonays.pl** (rejestrator OVH). Dla produkcji ustaw `SITE_URL=https://sqoonays.pl` w zmiennych **budowania** Cloudflare. `.env.example` zawiera tę wartość; lokalnie możesz skopiować go do `.env`. Zmienna nie jest sekretem. Astro odczytuje ją podczas budowania, więc zmiana wymaga nowego builda. Plik `.env.example` sam nie ustawia zmiennych w panelu Cloudflare. Przyłączenie DNS i domeny nie zostało wykonane w ramach zmian w kodzie; instrukcja jest w `docs/CLOUDFLARE.md`.
+Docelowa domena potwierdzona przez użytkownika: **https://sqoonays.pl** (rejestrator OVH). Jest domyślną domeną w `astro.config.mjs`; zwykły build dopuszcza indeksowanie także bez zmiennej `SITE_URL` lub z jej pustą wartością. Opcjonalne `SITE_URL` nadpisuje domenę. Astro odczytuje ustawienia podczas budowania, więc zmiana wymaga nowego builda i wdrożenia. Przyłączenie DNS i domeny nie zostało wykonane w ramach zmian w kodzie; instrukcja jest w `docs/CLOUDFLARE.md`.
 
-Bez `SITE_URL` strona ma `noindex, nofollow`, robots.txt z `Disallow: /`, bez canonical i bez mapy witryny. Nie tworzymy fikcyjnej domeny. Z ustawionym `SITE_URL` powstają canonical, absolutne adresy OG, `sitemap-index.xml`, `sitemap-0.xml` oraz robots.txt dopuszczający indeksowanie. **Nie ustawiaj domeny produkcyjnej dla publicznego środowiska testowego.** `noindex` nie jest kontrolą dostępu.
+Domyślnie strona główna ma `index, follow`, robots.txt z `Allow: /`, canonical, absolutne adresy OG oraz `sitemap-index.xml` i `sitemap-0.xml` dla domeny produkcyjnej. Dla publicznej kopii testowej ustaw jawnie **build variable `SITE_NOINDEX=true`**: otrzymasz `noindex, nofollow`, robots.txt z `Disallow: /`, bez canonical i sitemap. Na produkcji usuń tę zmienną lub ustaw `false`. Puste `SITE_URL` nie blokuje już indeksowania. Strona błędu 404 pozostaje zawsze `noindex`. `noindex` nie jest kontrolą dostępu.
 
 JSON-LD `HairSalon` zawiera jedynie nazwę, adres, Booksy, Instagram i adres strony, gdy jest ustalony. Nie dodajemy niepotwierdzonych cen, godzin, telefonu, zdjęć ani ocen. Jedno H1, polski język dokumentu, title/description, OG/Twitter Card i favicon są dostępne od początku.
 
@@ -92,13 +92,13 @@ Karta 1200×630 zawiera autentyczne zdjęcie wnętrza, nazwę, lokalizację, has
 
 `pnpm generate:og` tworzy PNG, samodzielny SVG i `src/data/social-image.json`. `pnpm build` wywołuje generator automatycznie przed Astro. Po ręcznych zmianach tekstów uruchom generator także dla podglądu `pnpm dev`. Commituj manifest i wygenerowaną kartę razem ze źródłami. Hash treści w nazwie pliku zmienia URL obrazu przy zmianie grafiki; `/og.png` pozostaje zgodnym wstecznie adresem. Starsze, już opublikowane wersje kart warto zachować, jeśli mogą być nadal używane w pamięci podręcznej komunikatorów.
 
-Layout publikuje tytuł, krótki opis, adres kanoniczny, absolutny HTTPS URL grafiki, MIME, wymiary i opis alternatywny Open Graph oraz Twitter `summary_large_image`. Wymaga to poprawnego `SITE_URL` podczas builda. Nie trzeba instalować skryptów Facebooka, SDK ani trackerów.
+Layout publikuje tytuł, krótki opis, adres kanoniczny, absolutny HTTPS URL grafiki, MIME, wymiary i opis alternatywny Open Graph oraz Twitter `summary_large_image`. Domyślnie używa `https://sqoonays.pl`; przy zmianie domeny ustaw poprawne `SITE_URL` podczas builda. Nie trzeba instalować skryptów Facebooka, SDK ani trackerów.
 
 Po wdrożeniu sprawdź publiczny HTML oraz URL obrazu z manifestu: oba muszą odpowiadać bez logowania i blokad dla botów. Serwisy mają własną pamięć podręczną, zasady i różne kadry; karta nie gwarantuje identycznego wyglądu w każdej aplikacji. Przy starym podglądzie Facebook/Messenger możesz ręcznie użyć [Sharing Debugger](https://developers.facebook.com/tools/debug/) i ponownego pobrania (`Scrape Again`). Grafika nie będzie widoczna online, dopóki zmiany nie zostaną wdrożone. W chwili lokalnej kontroli 01.11.2026 domena `sqoonays.pl` nie rozwiązywała się przez używany resolver, więc testu pobierania karty z produkcji nie wykonano.
 
 ## Prywatność i dostępność
 
-Brak analityki, pikseli, cookies ustawianych przez kod aplikacji, formularzy, backendu, zewnętrznych fontów i skryptów ładowanych do głównego dokumentu. Na wyraźne życzenie użytkownika sekcja „Nasz adres” zawiera widoczną mapę Google w iframe, wyszukującą Mylna 1, 81-009 Gdynia. Mapa ma `loading="lazy"`, stałą wysokość i dostępny tytuł; nie potrzebuje klucza API ani zależności. Jej wyświetlenie łączy przeglądarkę z Google, które otrzymuje dane połączenia (np. adres IP) i może korzystać z własnych cookies. Nie ma dodatkowego przycisku zgody ani zapisywania preferencji; mapa nie jest odraczana do kliknięcia. `referrerpolicy="no-referrer"` ogranicza przekazywanie adresu strony. Zasady dostawcy: [Prywatność Google](https://policies.google.com/privacy). Przed publikacją uwzględnij tę integrację w informacji o prywatności i oceń docelowe ustawienia zgód.
+Brak analityki, pikseli, cookies ustawianych przez kod aplikacji, formularzy, backendu, zewnętrznych fontów i skryptów ładowanych do głównego dokumentu. Na wyraźne życzenie użytkownika sekcja „Nasz adres” zawiera mapę Google w iframe, wyszukującą Mylna 1, 81-009 Gdynia. `IntersectionObserver` uruchamia pobieranie mapy automatycznie, gdy sekcja znajdzie się w odległości do 200 px od widoku; wcześniej iframe pozostaje w nieaktywnym `<template>`, więc skrypty Google nie obciążają początku strony. Nie wymaga kliknięcia. Przy wyłączonym JS mapę obsługuje `<noscript>` z natywnym lazy loadingiem. Miejsce na mapę ma zawsze wysokość 280 px, iframe ma dostępny tytuł; nie potrzebuje klucza API ani zależności. Jej wyświetlenie łączy przeglądarkę z Google, które otrzymuje dane połączenia (np. adres IP) i może korzystać z własnych cookies. Nie ma dodatkowego przycisku zgody ani zapisywania preferencji. `referrerpolicy="no-referrer"` ogranicza przekazywanie adresu strony. Zasady dostawcy: [Prywatność Google](https://policies.google.com/privacy). Przed publikacją uwzględnij tę integrację w informacji o prywatności i oceń docelowe ustawienia zgód.
 
 Przeglądanie strony nie ładuje Booksy ani Instagrama. Linki otwierają się w tej samej karcie, bez `target="_blank"` i bez dostępu do `window.opener`. Zachowano bezpośredni link do wyznaczenia trasy, także na wypadek niedostępności mapy lub zablokowania jej przez przeglądarkę. Przed publikacją oceń także logi i ustawienia wybranego hostingu. Nie utworzono fikcyjnej polityki prywatności.
 
@@ -116,7 +116,7 @@ pnpm cf:check    # Astro check + build + verify + Wrangler dry-run, bez publikac
 pnpm cf:preview  # Lokalna emulacja Cloudflare: http://127.0.0.1:8787
 ```
 
-Ustawienia Workers Builds: root katalog główny repozytorium, build `pnpm cf:check`, deploy `pnpm exec wrangler deploy`, nazwa Workera `sqoonays-barbershop`. Node jest wskazany w `.node-version`, pnpm w `packageManager`. Przed produkcją ustaw **build variable** `SITE_URL` na zatwierdzoną domenę HTTPS. Bez niej build pozostaje `noindex`.
+Ustawienia Workers Builds: root katalog główny repozytorium, build `pnpm cf:check`, deploy `pnpm exec wrangler deploy`, nazwa Workera `sqoonays-barbershop`. Node jest wskazany w `.node-version`, pnpm w `packageManager`. Produkcja domyślnie używa `https://sqoonays.pl` i dopuszcza indeksowanie. Upewnij się, że produkcyjna **build variable** `SITE_NOINDEX` jest usunięta lub ma wartość `false`.
 
 Pełna instrukcja krok po kroku, w tym GitHub oraz alternatywny ręczny deploy: [docs/CLOUDFLARE.md](docs/CLOUDFLARE.md). Zainstalowano lokalny, przypięty Wrangler; `pnpm cf:deploy` jest komendą faktycznie publikującą i nie została uruchomiona.
 
@@ -129,7 +129,7 @@ Oficjalne instrukcje: [Astro — instalacja](https://docs.astro.build/en/install
 - [ ] Zweryfikuj faktyczne strony docelowe Booksy i Instagrama oraz trasę do Mylnej 1. Kontrola lokalnego HTML potwierdza adresy, nie dostępność usług zewnętrznych.
 - [ ] Zmierz Lighthouse mobile (cel Performance i SEO ≥90) na finalnym buildzie ze zdjęciami. Wynik nie jest gwarantowany. Sprawdź LCP/CLS/INP oraz pobierane zasoby.
 - [ ] Zweryfikuj JSON-LD w Google Rich Results Test i metadane przy udostępnianiu.
-- [ ] W Google Search Console dodaj usługę domenową, ręcznie zweryfikuj DNS, wyślij `https://TWOJA-DOMENA/sitemap-index.xml`, sprawdź adres główny w Inspekcji URL. Zweryfikuj, że produkcja nie ma `noindex`.
+- [ ] W Google Search Console dodaj usługę domenową, ręcznie zweryfikuj DNS, wyślij `https://sqoonays.pl/sitemap-index.xml`, sprawdź adres główny w Inspekcji URL. Zweryfikuj, że produkcja nie ma `noindex`.
 - [ ] Po osobnej zgodzie właściciela dodaj zatwierdzony URL w Profilu Firmy Google. Sprawdź spójność nazwy, adresu oraz potwierdzonych godzin/telefonu; zachowaj oficjalny link rezerwacji Booksy.
 - [ ] Obserwuj raporty indeksowania i Core Web Vitals. Nie obiecujemy pozycji ani terminu indeksacji.
 

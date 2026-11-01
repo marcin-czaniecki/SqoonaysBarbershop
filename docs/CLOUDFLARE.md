@@ -7,7 +7,7 @@ Projekt jest gotowy do hostingu statycznego. Nie został jeszcze połączony z k
 - `wrangler.jsonc`: nazwa `sqoonays-barbershop`, katalog `./dist`, standardowe obsługiwanie HTML i własna strona 404. Brak `main`, SSR, API, bazy i bindings.
 - Wrangler w `devDependencies` i w lockfile; nie używamy losowej wersji `latest` podczas wdrożenia.
 - `.node-version`: Node 24.22.1, dostępny w obrazie Workers Builds według dokumentacji Cloudflare. pnpm 9.5.0 wskazany w `package.json`.
-- `public/_headers`: `nosniff`, polityka referera i roczny cache `immutable` wyłącznie dla fingerprintowanych plików `/_astro/*`. HTML pozostaje przy domyślnej obsłudze cache Cloudflare.
+- `public/_headers`: `nosniff`, polityka referera i roczny cache `immutable` dla fingerprintowanych plików `/_astro/*` (także fontów) i wersjonowanych kart `/social/*`. HTML pozostaje przy domyślnej obsłudze cache Cloudflare.
 - `src/pages/404.astro`: polska strona błędu, zawsze `noindex`, z linkiem powrotu i Booksy. Nie ma fallbacku SPA zwracającego 200 dla nieistniejących adresów.
 - `.gitignore` pomija `node_modules`, `dist`, `.env`, `.wrangler`, lokalny store pnpm i pliki `.dev.vars`.
 
@@ -36,25 +36,26 @@ W panelu Cloudflare przejdź do **Workers & Pages**, rozpocznij tworzenie aplika
 | Deploy command | `pnpm exec wrangler deploy` |
 | Node | Z `.node-version`: `24.22.1` |
 | pnpm | Z `packageManager`: `pnpm@9.5.0` |
-| Build variable `SITE_URL` | `https://sqoonays.pl` dla produkcji; puste dla wersji testowej `noindex` |
+| Build variable `SITE_URL` | Opcjonalne `https://sqoonays.pl` — ta domena jest już domyślna |
+| Build variable `SITE_NOINDEX` | Produkcja: brak lub `false`; kopia testowa: `true` |
 
 `assets.directory = "./dist"` jest już zapisane w konfiguracji. To **Workers Static Assets**, nie projekt Pages — pole „Build output directory” z instrukcji Pages nie zastępuje tutaj `wrangler.jsonc`.
 
 Cloudflare instaluje zależności przed buildem, rozpoznając pnpm i lockfile. Jeśli wyłączysz automatyczną instalację, użyj komendy budowania `pnpm install --frozen-lockfile && pnpm cf:check`. Nie ustawiaj instalacji wyłącznie zależności produkcyjnych — kompilator Tailwind, kontrola Astro i Wrangler są narzędziami deweloperskimi potrzebnymi podczas budowania.
 
-4. Na początek nie włączaj automatycznych preview builds dla innych gałęzi. Możesz skonfigurować je osobno później, z własnymi zmiennymi i `noindex`; nie współdziel produkcyjnego `SITE_URL` z kopią testową.
+4. Na początek nie włączaj automatycznych preview builds dla innych gałęzi. Możesz skonfigurować je osobno później, ustawiając dla nich **`SITE_NOINDEX=true`**. Sam brak `SITE_URL` nie blokuje indeksowania.
 5. Utworzenie projektu i uruchomienie deploya opublikuje stronę. Po jego sukcesie użyj rzeczywistego adresu `workers.dev` zwróconego przez Cloudflare. Nie zgadujemy nazwy Twojej subdomeny konta.
 
 Nie potrzebujesz tokena Cloudflare zapisanego w GitHub Actions. Uwierzytelnianie Workers Builds jest konfigurowane w Cloudflare. Nie wklejaj danych dostępu do repozytorium ani czatu.
 
 ## 3. Pierwsza wersja i domena
 
-Możesz najpierw udostępnić testową wersję `workers.dev` bez `SITE_URL`: będzie miała `noindex` i robots blokujący indeksowanie. Jest to nadal publicznie dostępna strona — `noindex` nie jest hasłem ani kontrolą dostępu.
+Możesz najpierw udostępnić testową wersję `workers.dev` z **build variable `SITE_NOINDEX=true`**: będzie miała `noindex` i robots blokujący indeksowanie. Jest to nadal publicznie dostępna strona — `noindex` nie jest hasłem ani kontrolą dostępu. Brak lub puste `SITE_URL` oznacza teraz domyślną produkcję `https://sqoonays.pl` z dopuszczonym indeksowaniem.
 
 Po wybraniu domeny:
 
 1. Podłącz zatwierdzoną domenę w ustawieniach domen Workera. DNS i rejestracja domeny są osobnym krokiem.
-2. Ustaw `SITE_URL` jako **build variable**, np. pełny zatwierdzony adres strony. Nie jest to zmienna runtime ani sekret i nie należy umieszczać jej w `vars` Workera.
+2. Dla `sqoonays.pl` domena jest już ustawiona domyślnie w repozytorium. Usuń `SITE_NOINDEX` lub ustaw `false` w **build variables**. Przy innej zatwierdzonej domenie nadpisz `SITE_URL`. Nie są to zmienne runtime ani sekrety i nie należy umieszczać ich w `vars` Workera.
 3. Uruchom ponowny build/deploy. Dopiero nowy build otrzyma canonical, absolutne OG, sitemap i robots dopuszczający indeksowanie.
 4. Sprawdź HTTPS i wybierz jeden wariant domeny. Przekierowania pozostałych wariantów skonfiguruj świadomie w Cloudflare — konfiguracja repozytorium nie zakłada własności żadnej domeny.
 
@@ -69,7 +70,7 @@ Docelowy adres produkcji: **https://sqoonays.pl**, bez `www`. Użytkownik potwie
 3. Cloudflare wyświetli **konkretną parę serwerów nazw dla tej strefy**. Skopiuj dokładnie te wartości; nie używaj przykładów z poradników.
 4. W OVH przejdź do domeny `sqoonays.pl` → **Serwery DNS** → modyfikacja serwerów. Zastąp dotychczasowe serwery dwoma wskazanymi przez Cloudflare. To zmiana serwerów DNS domeny, a nie dodanie rekordów NS w zakładce „Strefa DNS”. Poczekaj, aż strefa w Cloudflare uzyska status **Active**.
 5. W Cloudflare otwórz **Workers & Pages → sqoonays-barbershop → Settings → Domains & Routes → Add → Custom Domain**. Wpisz **`sqoonays.pl`**, bez `https://` i bez `/*`. Potwierdź podłączenie. Cloudflare tworzy rekord DNS i obsługuje certyfikat TLS dla Custom Domain. Jeśli importowany rekord dla tego samego hosta powoduje konflikt, sprawdź go przed zastąpieniem; nie kasuj całej strefy ani rekordów pocztowych. Nie wpisuj ręcznie adresu IP Workera.
-6. W **Settings → Builds → Build variables and secrets** dodaj zwykłą zmienną `SITE_URL` o wartości **`https://sqoonays.pl`**. To zmienna budowania, nie `Variables & Secrets` dla runtime. Uruchom ponowny build/deploy po podłączeniu domeny. Nowy build ma canonical, OG i sitemap dla `sqoonays.pl` oraz dopuszcza indeksowanie.
+6. W **Settings → Builds → Build variables and secrets** upewnij się, że `SITE_NOINDEX` jest usunięte lub ma wartość **`false`**. `SITE_URL=https://sqoonays.pl` jest opcjonalne — to domyślna domena repozytorium. Są to ustawienia budowania, nie `Variables & Secrets` dla runtime. Uruchom ponowny build/deploy po podłączeniu domeny. Nowy build ma canonical, OG i sitemap dla `sqoonays.pl` oraz dopuszcza indeksowanie.
 7. Sprawdź `https://sqoonays.pl/`, `/robots.txt`, `/sitemap-index.xml` i nieistniejącą ścieżkę. Dla `www.sqoonays.pl` przygotuj osobno przekierowanie 301/308 do `https://sqoonays.pl`, z zachowaniem ścieżki i query string; docelowe DNS i HTTPS wariantu `www` także muszą być obsłużone. Sam canonical nie wykonuje przekierowania.
 
 Odczyt publicznego DNS 31.10.2026 podczas przygotowania: serwery `dns103.ovh.net` i `ns103.ovh.net`, rekord A domeny `213.186.33.5`, TXT `1|www.sqoonays.pl` i `v=spf1 -all`. Zapytanie MX nie zwróciło rekordów pocztowych; nie jest to pełny audyt strefy. Są to obserwacje, nie wartości do kopiowania do nowej konfiguracji. DNS nie został zmieniony.
