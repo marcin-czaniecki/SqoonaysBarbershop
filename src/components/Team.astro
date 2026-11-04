@@ -1,11 +1,11 @@
 ---
-import { team, teamConfirmed } from '../data/team';
+import { team } from '../data/team';
 import { photos } from '../data/media';
 import PhotoFrame from './PhotoFrame.astro';
 import Arrow from './Arrow.astro';
 ---
 <section id="zespol" class="section team container" aria-labelledby="team-title">
-  <div class="section-heading"><div><p class="eyebrow">03 / BARBERZY</p><h2 id="team-title">Poznaj <span class="serif-emphasis">zespół.</span></h2></div>{!teamConfirmed && <p>Skład według specyfikacji startowej.<br />Aktualność do potwierdzenia.</p>}</div>
+  <div class="section-heading"><div><p class="eyebrow">03 / BARBERZY</p><h2 id="team-title">Poznaj <span class="serif-emphasis">zespół.</span></h2></div></div>
   <div class="team-grid">{team.map((member, index) => <article class="team-member">
     <PhotoFrame label={`Portret: ${member.name}`} number={String(index + 1).padStart(2, '0')} monogram={member.initials} photo={member.name === 'Patryk' ? photos.patryk : photos.dominika} sizes="(max-width: 359px) calc(100vw - 32px), (max-width: 899px) 45vw, (max-width: 1599px) 24vw, 356px" />
     <div class="team-caption"><div><h3>{member.name}</h3><p>{member.role}</p></div>{member.instagram && <a href={member.instagram} class="icon-link" aria-label={`Instagram — ${member.name}`}><Arrow diagonal /></a>}</div>
