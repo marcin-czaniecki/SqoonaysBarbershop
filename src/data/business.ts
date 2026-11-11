@@ -1,14 +1,31 @@
+interface PostalAddress {
+  readonly street: string;
+  readonly postalCode: string;
+  readonly city: string;
+  readonly country: string;
+}
+
 interface Business {
   readonly name: string;
-  readonly address: { readonly street: string; readonly postalCode: string; readonly city: string; readonly country: string };
+  readonly legalName: string;
+  readonly taxId: string;
+  readonly address: PostalAddress;
+  readonly correspondenceAddress: PostalAddress;
+  readonly contact: { readonly phone: string; readonly phoneDisplay: string; readonly email: string };
   readonly links: { readonly booking: string; readonly instagram: string; readonly directions: string; readonly mapEmbed: string };
   readonly seo: { readonly title: string; readonly description: string };
 }
 
-// Source: SPEC.md. TODO: Obtain final owner approval before publication.
-export const business = {
+const salonAddress: PostalAddress = { street: 'Mylna 1', postalCode: '81-009', city: 'Gdynia', country: 'PL' };
+
+// Source: SPEC.md.
+export const business: Business = {
   name: "Sqoonay's Barbershop",
-  address: { street: 'Mylna 1', postalCode: '81-009', city: 'Gdynia', country: 'PL' },
+  legalName: 'Patryk Pyszka Usługi fryzjerskie',
+  taxId: '5851512406',
+  address: salonAddress,
+  correspondenceAddress: salonAddress,
+  contact: { phone: '+48692729148', phoneDisplay: '692 729 148', email: 'sqoonaybarber@gmail.com' },
   links: {
     booking: 'https://booksy.com/pl-pl/363234_sqoonay-s-barbershop_barber-shop_21029_gdynia',
     instagram: 'https://www.instagram.com/sqoonaybarbershop/',
@@ -19,7 +36,18 @@ export const business = {
     title: "Sqoonay's Barbershop | Barber Gdynia, Mylna 1",
     description: "Strzyżenie męskie, pielęgnacja brody i usługi barberskie w Gdyni. Poznaj Sqoonay's Barbershop i zarezerwuj wizytę przez Booksy.",
   },
-} as const satisfies Business;
+};
+
+export const businessContact = {
+  phone: `tel:${business.contact.phone}`,
+  email: `mailto:${business.contact.email}`,
+  mailingAddress: `${business.correspondenceAddress.street}, ${business.correspondenceAddress.postalCode} ${business.correspondenceAddress.city}`,
+} as const;
+
+export const legalPages = {
+  privacy: '/polityka-prywatnosci/',
+  terms: '/regulamin/',
+} as const;
 
 export const navigation = [
   { href: '#uslugi', label: 'Usługi' },

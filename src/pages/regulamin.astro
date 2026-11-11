@@ -1,0 +1,28 @@
+---
+import LegalPage from '../layouts/LegalPage.astro';
+import { business, businessContact, legalPages } from '../data/business';
+---
+<LegalPage heading="Regulamin serwisu" description="Zasady korzystania ze strony Sqoonay’s Barbershop oraz informacje o rezerwacjach i reklamacjach.">
+  <section aria-labelledby="uslugodawca">
+    <h2 id="uslugodawca">Kto prowadzi serwis</h2>
+    <p>Serwis prowadzi {business.legalName} (NIP {business.taxId}). Adres do korespondencji to {businessContact.mailingAddress}.</p>
+    <p>Z salonem skontaktujesz się mailowo pod adresem <a href={businessContact.email}>{business.contact.email}</a> lub telefonicznie pod numerem <a href={businessContact.phone}>{business.contact.phoneDisplay}</a>.</p>
+  </section>
+
+  <section aria-labelledby="korzystanie">
+    <h2 id="korzystanie">Korzystanie ze strony</h2>
+    <p>Na stronie możesz bezpłatnie sprawdzić informacje o salonie i usługach oraz przejść do rezerwacji i wskazówek dojazdu. Wystarczy urządzenie z dostępem do internetu i przeglądarką. JavaScript wspiera działanie menu i mapy. Dostęp do treści rozpoczyna się z chwilą otwarcia strony i kończy po jej zamknięciu.</p>
+    <p>Zakazane jest dostarczanie treści bezprawnych, w tym w zgłoszeniach dotyczących serwisu. Odnośniki prowadzą do usług zewnętrznych, na których obowiązują zasady ich dostawców. Informacje o danych technicznych i mapie znajdziesz w <a href={legalPages.privacy}>polityce prywatności</a>.</p>
+  </section>
+
+  <section aria-labelledby="rezerwacje">
+    <h2 id="rezerwacje">Rezerwacja wizyty</h2>
+    <p>Wybierz usługę i termin na <a href={business.links.booking}>profilu salonu w Booksy</a>. Przed potwierdzeniem sprawdź cenę oraz warunki rezerwacji, płatności, zmiany i odwołania terminu. Zasady korzystania z platformy opisuje <a href="https://booksy.com/pl-pl/p/terms">regulamin Booksy dla klientów</a>.</p>
+    <p>Jeśli rezerwacja prowadzi do zawarcia z salonem umowy na odległość, konsumentowi co do zasady przysługuje 14 dni na odstąpienie od jej zawarcia. Oświadczenie można przesłać na adres e-mail salonu. Zasady rozpoczęcia lub wykonania usługi w tym okresie wynikają z <a href="https://eli.gov.pl/eli/DU/2026/1244/ogl">ustawy o prawach konsumenta</a>.</p>
+  </section>
+
+  <section aria-labelledby="reklamacje">
+    <h2 id="reklamacje">Zgłoszenia i reklamacje</h2>
+    <p>Reklamację dotyczącą strony lub usługi salonu możesz przesłać na <a href={businessContact.email}>{business.contact.email}</a> albo złożyć w salonie. Podaj dane do odpowiedzi, opisz problem i wskaż, jakiego rozwiązania oczekujesz. Jeśli reklamacja dotyczy wizyty, dołącz jej datę lub numer rezerwacji, jeśli go masz. Na reklamację konsumenta odpowiemy w terminie 14 dni od jej otrzymania, chyba że odrębne przepisy przewidują inny termin.</p>
+  </section>
+</LegalPage>

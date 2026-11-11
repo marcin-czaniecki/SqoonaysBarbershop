@@ -1,5 +1,5 @@
 ---
-import { business } from '../data/business';
+import { business, businessContact, legalPages } from '../data/business';
 import BookingLink from './BookingLink.astro';
 import Arrow from './Arrow.astro';
 import GoogleMap from './GoogleMap.astro';
@@ -8,8 +8,22 @@ import GoogleMap from './GoogleMap.astro';
   <div class="container contact-grid">
     <div><p class="eyebrow">06 / KONTAKT I DOJAZD</p><h2 id="contact-title">Do zobaczenia<br /><span class="serif-emphasis">na Mylnej.</span></h2><BookingLink /></div>
     <div class="contact-details">
-      <div class="contact-address"><span class="eyebrow">NASZ ADRES</span><address>{business.address.street}<br />{business.address.postalCode} {business.address.city}</address><GoogleMap /><a href={business.links.directions} class="text-link">Wyznacz trasę w Google Maps <Arrow diagonal /></a></div>
-      <div class="contact-social"><span class="eyebrow">BĄDŹMY W KONTAKCIE</span><a href={business.links.instagram} class="text-link">@sqoonaybarbershop <Arrow diagonal /></a><p>Terminy i rezerwacje znajdziesz w Booksy.</p></div>
+      <div class="contact-address">
+        <span class="eyebrow">NASZ ADRES</span>
+        <address>{business.address.street}<br />{business.address.postalCode} {business.address.city}</address>
+        <p class="map-notice">Mapa ładuje się automatycznie z Google. <a href={`${legalPages.privacy}#mapa`}>Jak działa mapa?</a></p>
+        <GoogleMap />
+        <a href={business.links.directions} class="text-link">Wyznacz trasę w Google Maps <Arrow diagonal /></a>
+      </div>
+      <div class="contact-social">
+        <span class="eyebrow">BĄDŹMY W KONTAKCIE</span>
+        <ul class="contact-channels">
+          <li><a href={businessContact.phone}>{business.contact.phoneDisplay}</a></li>
+          <li><a href={businessContact.email}>{business.contact.email}</a></li>
+          <li><a href={business.links.instagram}>@sqoonaybarbershop</a></li>
+        </ul>
+        <p>Terminy i rezerwacje znajdziesz w Booksy.</p>
+      </div>
     </div>
   </div>
 </section>

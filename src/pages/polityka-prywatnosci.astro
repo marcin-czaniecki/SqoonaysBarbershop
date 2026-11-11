@@ -1,0 +1,43 @@
+---
+import LegalPage from '../layouts/LegalPage.astro';
+import { business, businessContact } from '../data/business';
+---
+<LegalPage heading="Polityka prywatności" description="Informacja o danych osobowych, hostingu, Mapach Google i rezerwacjach w Sqoonay’s Barbershop.">
+  <section aria-labelledby="administrator">
+    <h2 id="administrator">Administrator danych</h2>
+    <p>Administratorem danych jest {business.legalName}, prowadzący salon {business.name}. Adres do korespondencji to {businessContact.mailingAddress}.</p>
+    <p>W sprawie danych osobowych napisz na <a href={businessContact.email}>{business.contact.email}</a> lub zadzwoń pod <a href={businessContact.phone}>{business.contact.phoneDisplay}</a>.</p>
+  </section>
+
+  <section aria-labelledby="cele">
+    <h2 id="cele">Jakie dane przetwarzamy i w jakim celu</h2>
+    <ul>
+      <li><strong>Odwiedziny na stronie.</strong> Cloudflare obsługuje dostarczanie i ochronę strony. Przy połączeniu przetwarza dane techniczne, takie jak adres IP, czas i adres żądania oraz informacje o przeglądarce. Naszym prawnie uzasadnionym interesem jest zapewnienie dostępności i bezpieczeństwa strony (art. 6 ust. 1 lit. f RODO).</li>
+      <li><strong>Kontakt z salonem.</strong> Wykorzystujemy adres e-mail lub numer telefonu oraz informacje podane w korespondencji lub rozmowie, żeby odpowiedzieć i obsłużyć sprawę. Podstawą są działania na Twoje żądanie przed zawarciem umowy lub wykonanie umowy (lit. b), a w pozostałych sprawach nasz prawnie uzasadniony interes w prowadzeniu korespondencji i obsłudze zgłoszeń (lit. f).</li>
+      <li><strong>Rezerwacja wizyty.</strong> Po rezerwacji otrzymujemy z Booksy dane potrzebne do obsługi wizyty, takie jak dane kontaktowe i szczegóły terminu oraz usługi. Wykorzystujemy je do obsługi rezerwacji i wykonania usługi (lit. b), realizacji obowiązków prawnych, gdy mają zastosowanie (lit. c), oraz ustalenia, dochodzenia lub obrony roszczeń (lit. f).</li>
+    </ul>
+    <p>Podanie danych przy kontakcie i rezerwacji jest dobrowolne. Bez danych potrzebnych do odpowiedzi lub obsługi wizyty możemy nie móc załatwić sprawy. Dane techniczne są przekazywane automatycznie przy połączeniu.</p>
+  </section>
+
+  <section aria-labelledby="mapa">
+    <h2 id="mapa">Mapy Google i pliki cookie</h2>
+    <p>Mapa dojazdu ładuje się automatycznie przy zbliżeniu do sekcji kontaktu. Przy wyłączonym JavaScripcie o momencie pobrania mapy decyduje przeglądarka. Po wczytaniu mapy przeglądarka łączy się z Google i przekazuje dane połączenia, w tym adres IP. Mapa służy pokazaniu lokalizacji i ułatwieniu dojazdu do salonu (art. 6 ust. 1 lit. f RODO).</p>
+    <p>Serwis nie używa własnych plików cookie do analityki ani reklamy. Osadzenie Google może korzystać z plików cookie lub podobnych technologii zależnie od ustawień i sesji w przeglądarce. Zarządzać nimi możesz w ustawieniach przeglądarki. Zasady przetwarzania przez dostawcę opisuje <a href="https://policies.google.com/privacy?hl=pl">polityka prywatności Google</a>.</p>
+  </section>
+
+  <section aria-labelledby="odbiorcy">
+    <h2 id="odbiorcy">Dostawcy i przekazywanie danych</h2>
+    <p>W obsłudze strony i kontaktu uczestniczą Cloudflare jako dostawca hostingu i ochrony oraz Google jako dostawca mapy i poczty Gmail. Rezerwacje obsługuje Booksy. Zasady dotyczące konta i aplikacji opisuje <a href="https://booksy.com/pl-pl/p/information-obligation">informacja o danych w Booksy</a>. Instagram i formularz opinii Google otwierają się po wybraniu linku do danej platformy.</p>
+    <p>Cloudflare i Google mogą przetwarzać dane poza Europejskim Obszarem Gospodarczym. Informacje o stosowanych mechanizmach transferu, w tym standardowych klauzulach umownych, udostępniają <a href="https://www.cloudflare.com/cloudflare-customer-dpa/">Cloudflare</a> i <a href="https://policies.google.com/privacy/frameworks?hl=pl">Google</a>. Możesz też skontaktować się z nami w sprawie zabezpieczeń dotyczących Twoich danych.</p>
+  </section>
+
+  <section aria-labelledby="retencja">
+    <h2 id="retencja">Jak długo przechowujemy dane</h2>
+    <p>Dane kontaktowe i rezerwacyjne przechowujemy przez czas potrzebny do obsługi sprawy lub wizyty. Możemy zachować potrzebne dane przez okres wymagany przepisami lub do upływu właściwego terminu przedawnienia roszczeń. Czas przechowywania danych technicznych zależy od konfiguracji usługi i od tego, jak długo są potrzebne do bezpieczeństwa i diagnostyki.</p>
+  </section>
+
+  <section aria-labelledby="prawa">
+    <h2 id="prawa">Twoje prawa</h2>
+    <p>Możesz żądać dostępu do danych, ich sprostowania, usunięcia lub ograniczenia przetwarzania. W przypadkach określonych w RODO masz też prawo do przenoszenia danych i sprzeciwu wobec przetwarzania opartego na prawnie uzasadnionym interesie. Możesz złożyć <a href="https://uodo.gov.pl/pl/493/4098">skargę do Prezesa Urzędu Ochrony Danych Osobowych</a>.</p>
+  </section>
+</LegalPage>

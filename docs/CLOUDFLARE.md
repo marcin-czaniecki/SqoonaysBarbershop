@@ -72,7 +72,7 @@ pnpm cf:deploy
 - [ ] Sprawdzono HTTPS i docelowe zachowanie wariantu www.
 - [ ] Na mobile/desktop działają menu, cennik, Booksy, dojazd i mapa po przewinięciu; fotografie mają właściwe kadry.
 - [ ] Powtórz PageSpeed mobile i desktop oraz test karty linku. Zapisz URL raportu, datę i wdrożony commit w QA; nie opisuj wyniku starej wersji jako wyniku nowych zmian.
-- [ ] Potwierdź dane firmy i przygotuj informację o prywatności zgodną z faktycznymi integracjami.
+- [ ] Zweryfikuj ustawienia logów, retencję i warunki powierzenia z informacją w `/polityka-prywatnosci/`.
 
 ## Ręcznie: Google Search Console i Profil Firmy Google
 

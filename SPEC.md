@@ -1,19 +1,22 @@
 # Sqoonay’s Barbershop — specyfikacja serwisu
 
-Aktualizacja: **01.11.2026**. Dokument opisuje aktualny zakres i status danych. Propozycje kolejnych etapów są w [ROADMAP.md](ROADMAP.md); nie stanowią części zaakceptowanego MVP.
+Aktualizacja: **11.11.2026**. Dokument opisuje aktualny zakres i status danych. Propozycje kolejnych etapów są w [ROADMAP.md](ROADMAP.md); nie stanowią części zaakceptowanego MVP.
 
 ## Cel i zakres
 
 Polska, statyczna strona lokalnego barbershopu w Gdyni. Ma ułatwiać poznanie salonu, dojazd i rezerwację przez istniejący Booksy. Priorytety: użytkownik mobilny, dostępność, szybkość i lokalna widoczność.
 
-Jedna strona `/` z sekcjami Header, Hero, O nas, Usługi i cennik, Zespół, Galeria, Opinie klientów, Kontakt/Dojazd oraz Footer. Osobna strona błędu 404. Strona polityki prywatności pozostaje planowana do czasu uzgodnienia rzeczywistych danych administratora i integracji.
+Strona `/` zawiera sekcje Header, Hero, O nas, Usługi i cennik, Zespół, Galeria, Opinie klientów, Kontakt/Dojazd oraz Footer. Stopka prowadzi do `/polityka-prywatnosci/` i `/regulamin/`. Osobna strona błędu 404.
 
 ## Fakty i ich potwierdzenie
 
 | Dane / decyzja | Wartość / źródło | Status |
 | --- | --- | --- |
-| Nazwa | Sqoonay’s Barbershop | Według oficjalnego Booksy |
-| Adres | Mylna 1, 81-009 Gdynia, Polska | Według oficjalnego Booksy |
+| Marka | Sqoonay’s Barbershop | Według oficjalnego Booksy |
+| Firma i forma | Patryk Pyszka Usługi fryzjerskie, JDG | Potwierdzone przez właściciela 11.11.2026 |
+| Adres salonu | Mylna 1, 81-009 Gdynia, Polska | Według oficjalnego Booksy |
+| NIP | 5851512406 | Potwierdzony przez właściciela 11.11.2026 |
+| Adres do korespondencji | Mylna 1, 81-009 Gdynia | Przyjęty na razie przez właściciela 11.11.2026, przechowywany osobno od adresu salonu |
 | Rezerwacje | [Booksy salonu](https://booksy.com/pl-pl/363234_sqoonay-s-barbershop_barber-shop_21029_gdynia) | Główny cel CTA „Umów wizytę” |
 | Instagram salonu | [@sqoonaybarbershop](https://www.instagram.com/sqoonaybarbershop/) | Link oficjalnego profilu |
 | Instagram Dominiki | [@domi.nika_hair](https://www.instagram.com/domi.nika_hair/) | Link podany w źródłach startowych |
@@ -22,7 +25,9 @@ Jedna strona `/` z sekcjami Header, Hero, O nas, Usługi i cennik, Zespół, Gal
 | Domena | `https://sqoonays.pl`, bez www; rejestrator OVH | Zakup potwierdzony przez właściciela |
 | Zespół | Patryk — Barber; Dominika — Barber | Booksy, odczyt 31.10.2026; aktualność wymaga potwierdzenia |
 | Usługi, ceny i czasy | `src/data/services.ts`, odczyt Booksy 31.10.2026 | `serviceReview.confirmed = false` |
-| Telefon, godziny, e-mail | Brak potwierdzonych wartości | Pominięte w UI i JSON-LD |
+| Telefon i e-mail | 692 729 148, sqoonaybarber@gmail.com | Potwierdzone przez właściciela 11.11.2026 |
+| Godziny | Brak potwierdzonych wartości | Pominięte w UI i JSON-LD |
+| Płatności, anulowanie i moment zawarcia umowy | Do sprawdzenia w ustawieniach rezerwacji Booksy | Regulamin serwisu odsyła do warunków pokazywanych przed potwierdzeniem |
 | Logo i branding | Tymczasowy wordmark, propozycja kolorów i typografii | Docelowa identyfikacja wymaga akceptacji |
 | Opis salonu | Neutralna treść oparta na znanych faktach | Autentyczny opis właściciela do uzupełnienia |
 
@@ -53,10 +58,10 @@ Zgoda na zdjęcia nie oznacza potwierdzenia cen, zespołu, biografii ani innych 
 - Tytuł i opis SEO w `src/data/business.ts`; canonical, Open Graph, Twitter Card, sitemap i statyczny robots.txt.
 - Domyślna domena w `astro.config.mjs`: `https://sqoonays.pl`. Opcjonalne `SITE_URL` nadpisuje origin; brak lub pusta wartość pozostawia domenę domyślną.
 - Domyślnie `index, follow` oraz `Allow: /`. Kopia testowa wymaga jawnego `SITE_NOINDEX=true`; wtedy brak canonical i sitemap. Strona 404 zawsze noindex i poza sitemap.
-- JSON-LD `HairSalon` oparty wyłącznie na znanych faktach; bez niepotwierdzonych godzin, telefonu i ocen.
+- JSON-LD `HairSalon` na stronie głównej obejmuje potwierdzoną nazwę firmy, NIP, telefon, e-mail i adres salonu.
 - Opinie: na życzenie właściciela darmowy wariant bez API i widgetu. Autorska sekcja po galerii, przed kontaktem, z przyciskami „Wystaw opinię” oraz „Zobacz opinie”. Obecnie nie pokazuje średniej, liczby ocen ani cytatów. Typowany model `src/data/reviews.ts` i prop komponentu umożliwiają późniejsze podłączenie zweryfikowanych danych, bez przechowywania sekretów w kliencie. Pobieranie i automatyczne odświeżanie nie są obecnie aktywne.
 - Karta social 1200×630 ze zdjęciem salonu; teksty w `src/data/social.ts`, generator uruchamiany przy buildzie. Wersjonowany PNG, manifest i zgodny wstecznie `/og.png`; `/og.svg` pozostaje generowanym podglądem.
-- Bez trackerów, zewnętrznych fontów i SDK social. Mapa nawiązuje połączenie z Google po zbliżeniu do sekcji. Informacja o prywatności musi opisywać rzeczywiste działanie mapy, hostingu i ewentualnych przyszłych narzędzi.
+- Kod serwisu nie zawiera analityki, zewnętrznych fontów ani SDK social. Polityka prywatności opisuje hosting Cloudflare, kontakt, rezerwacje i automatyczne połączenie mapy z Google. Ustawienia hostingu i Booksy wymagają weryfikacji w panelach.
 
 ## Hosting i weryfikacja
 

@@ -61,7 +61,13 @@ const schema = JSON.parse(jsonText);
 assert.equal(schema['@type'], 'HairSalon');
 assert.equal(schema.address.streetAddress, 'Mylna 1');
 assert.equal(schema.address.addressLocality, 'Gdynia');
-for (const field of ['telephone', 'openingHours', 'aggregateRating', 'review']) assert.equal(field in schema, false, `Unconfirmed field: ${field}`);
+assert.equal(schema.legalName, 'Patryk Pyszka Usługi fryzjerskie');
+assert.equal(schema.taxID, '5851512406');
+assert.equal(schema.telephone, '+48692729148');
+assert.equal(schema.email, 'sqoonaybarber@gmail.com');
+assert.ok(html.includes(`href="tel:${schema.telephone}"`));
+assert.ok(html.includes(`href="mailto:${schema.email}"`));
+for (const field of ['openingHours', 'aggregateRating', 'review']) assert.equal(field in schema, false, `Unconfirmed field: ${field}`);
 
 const canonical = html.match(/rel="canonical"\s+href="([^"]+)"/)?.[1];
 if (canonical) {
@@ -73,6 +79,7 @@ if (canonical) {
   assert.ok(robots.includes(`Sitemap: ${new URL('sitemap-index.xml', origin).href}`));
   const sitemap = await readFile('dist/sitemap-0.xml', 'utf8');
   assert.ok(sitemap.includes(origin.href));
+  for (const slug of ['polityka-prywatnosci', 'regulamin']) assert.ok(sitemap.includes(new URL(`/${slug}`, origin).href));
   assert.equal(sitemap.includes('/404'), false, '404 page excluded from sitemap');
   assert.equal(robots.includes('Disallow: /'), false);
   assert.match(robots, /User-agent: \*\s+Allow: \//);
@@ -105,5 +112,16 @@ assert.ok(html.includes('name="twitter:image:alt"'));
 const notFound = await readFile('dist/404.html', 'utf8');
 assert.match(notFound, /content="noindex, nofollow"/);
 assert.match(notFound, /href="\/"/);
+for (const [slug, heading] of [['polityka-prywatnosci', 'Polityka prywatności'], ['regulamin', 'Regulamin serwisu']]) {
+  const path = `/${slug}/`;
+  const page = await readFile(`dist${path}index.html`, 'utf8');
+  assert.ok(html.includes(`href="${path}"`));
+  assert.equal(page.match(/<h1\b[^>]*>([^<]+)<\/h1>/)?.[1], heading);
+  assert.ok(page.includes(schema.legalName));
+  assert.ok(page.includes(schema.taxID));
+  assert.doesNotMatch(page, /<iframe\b|application\/ld\+json/);
+  if (canonical) assert.ok(page.includes(`rel="canonical" href="${new URL(path, canonical).href}"`));
+  else assert.match(page, /content="noindex, nofollow"/);
+}
 await access('dist/_headers');
 console.log(`Build verified: Polish page, H1, anchors, local assets, booking links, JSON-LD, OG, ${canonical ? 'indexable production canonical and sitemap' : 'explicit noindex preview'}.`);

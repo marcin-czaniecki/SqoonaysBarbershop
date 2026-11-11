@@ -52,7 +52,7 @@ Zwykły build używa `https://sqoonays.pl`, `index, follow`, canonical oraz site
 
 Brak analityki, pikseli, formularzy, zewnętrznych fontów i skryptów social. Na życzenie właściciela mapa Google ładuje się automatycznie przy sekcji kontaktu, bez przycisku aktywacji; połączenie z Google może wiązać się z jego cookies. Szczegóły integracji i zadania dotyczące informacji o prywatności: [docs/CONTENT.md](docs/CONTENT.md).
 
-Ceny, czasy i aktualny skład zespołu nadal wymagają potwierdzenia. Telefon, godziny i e-mail pozostają pominięte; obecne zdjęcia mają udokumentowaną zgodę użytkownika. Pełna lista brakujących danych jest w instrukcji treści.
+Ceny, czasy, aktualny skład zespołu i godziny otwarcia wymagają potwierdzenia. Strona korzysta z potwierdzonej nazwy JDG, telefonu i e-maila. Stopka prowadzi do polityki prywatności i regulaminu serwisu. Pełna lista brakujących danych jest w instrukcji treści.
 
 Sekcja opinii między galerią a kontaktem działa bez API, opłat i widgetów. „Wystaw opinię” otwiera podany przez właściciela formularz Google, a „Zobacz opinie” — wizytówkę. `Reviews.astro` przyjmuje typowane dane na przyszłość; bez podłączonego źródła nie wyświetla ocen ani cytatów. Szczegóły rozbudowy są w [instrukcji treści](docs/CONTENT.md#opinie-google).
 

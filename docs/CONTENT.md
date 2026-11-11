@@ -6,7 +6,8 @@ Aktualizacja: 01.11.2026. Zakres i status faktów są w [SPEC.md](../SPEC.md). W
 
 | Zmiana | Plik | Zasada |
 | --- | --- | --- |
-| Nazwa, adres, Booksy, Instagram, dojazd, mapa | `src/data/business.ts` | Zachowaj zgodność adresu w linku mapy i danych firmy |
+| Marka, dane firmy, kontakt, Booksy, Instagram, dojazd, mapa | `src/data/business.ts` | Weryfikuj dane rejestrowe i zachowaj zgodność adresu salonu z mapą |
+| Informacja o prywatności i regulamin serwisu | `src/pages/polityka-prywatnosci.astro`, `src/pages/regulamin.astro` | Aktualizuj po zmianie dostawcy, obsługi rezerwacji lub zakresu przetwarzania |
 | Ceny, czasy i nazwy usług | `src/data/services.ts` | Jedyny edytowalny cennik; nie powielaj tabeli w dokumentach |
 | Zespół, role i profile | `src/data/team.ts` | Bez wymyślonych biografii, specjalizacji i profili |
 | Zdjęcia, alt i podpisy galerii | `src/data/media.ts` | Opisy mają odpowiadać fotografiom i ich źródłom |
@@ -17,7 +18,7 @@ Aktualizacja: 01.11.2026. Zakres i status faktów są w [SPEC.md](../SPEC.md). W
 
 Po potwierdzeniu cennika przez właściciela zmień wartości oraz datę w `serviceReview.sourceDate` i `sourceDateLabel`, a dopiero potem ustaw `confirmed: true`. Po potwierdzeniu zespołu zaktualizuj listę i ustaw `teamConfirmed = true`. Sama zgoda na zdjęcia nie potwierdza tych danych. Zaktualizuj także ich status w SPEC.
 
-Telefonu, godzin ani e-maila jeszcze nie ma w modelu danych. Ich dodanie wymaga potwierdzonych wartości, rozszerzenia typów `Business`, UI kontaktu i JSON-LD oraz aktualizacji verify, które celowo odrzuca obecność niepotwierdzonych pól. Nie dopisuj tych informacji wyłącznie do HTML. Proponowany zakres prac jest w [ROADMAP.md](../ROADMAP.md).
+Telefon i e-mail są używane w kontakcie, stronach informacyjnych i JSON-LD. NIP firmy pochodzi z `taxId`. Jeśli zmieni się adres do korespondencji, zmień `correspondenceAddress` bez zmiany adresu salonu używanego przez mapę. Godziny dodaj po potwierdzeniu i zaktualizuj weryfikację w `scripts/verify-build.mjs`.
 
 ## Zdjęcia i ikony
 
@@ -59,16 +60,17 @@ Oficjalne [Business Profile API jest bez opłat dla zarejestrowanych użytkownik
 
 Kod aplikacji nie ustawia cookies, nie zbiera formularzy i nie ma analityki. Mapa Google w `GoogleMap.astro` rozpoczyna pobieranie przy odległości do 200 px od widoku; bez JS korzysta z noscript i natywnego lazy loadingu. Nie wymaga kliknięcia. Ma stałą wysokość 280 px, tytuł i `referrerpolicy="no-referrer"`; link dojazdu jest niezależny od mapy.
 
-Po uruchomieniu mapy Google otrzymuje dane połączenia, np. IP, i może używać własnych cookies. Booksy i Instagram są zwykłymi linkami, bez pobierania ich skryptów w głównym dokumencie. Hosting może prowadzić własne logi. Przed przygotowaniem informacji o prywatności ustal rzeczywistą konfigurację dostawców i dane administratora; nie publikuj dokumentu z fikcyjnymi danymi. Zasady dostawcy mapy: [Prywatność Google](https://policies.google.com/privacy).
+Po uruchomieniu mapy Google otrzymuje dane połączenia, np. IP, i może używać własnych cookies. Link przy mapie prowadzi do jej opisu w polityce prywatności. Booksy i Instagram otwierają się po wybraniu odnośnika. Przed wdrożeniem potwierdź ustawienia logów, retencję i warunki powierzenia w Cloudflare oraz dane udostępniane salonowi w Booksy. Sprawdź, czy mapa odczytuje lub zapisuje opcjonalne dane na urządzeniu. Jeśli tak, uzgodnij wczytywanie po uprzedniej zgodzie.
 
 ## Brakujące materiały / decyzje właściciela
 
 - Potwierdzenie usług, cen, czasów oraz składu zespołu.
-- Telefon, godziny według dni i e-mail, jeśli mają być dostępne publicznie.
+- Docelowy adres do korespondencji i godziny otwarcia według dni.
 - Docelowe logo, favicon i akceptacja kolorów / typografii.
 - Autentyczny opis salonu i ewentualne opisy barberów.
 - Kolejne zdjęcia aktualnego salonu i realizacji wraz ze źródłami i zgodami.
-- Dane i decyzje potrzebne do informacji o prywatności; status Search Console i Profilu Firmy Google.
+- Warunki rezerwacji, płatności i anulowania w Booksy oraz ustawienia prywatności Cloudflare.
+- Status Search Console i Profilu Firmy Google.
 
 ## Po zmianie
 

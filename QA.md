@@ -1,8 +1,19 @@
 # Bieżący raport kontroli
 
-Aktualizacja: **01.11.2026**. Wyniki dotyczą lokalnego checkoutu. Nie potwierdzają, że identyczna wersja została wdrożona. Historia wcześniejszych etapów: [archiwum QA](docs/archive/QA-2026-10-31_2026-11-01.md).
+Aktualizacja: **11.11.2026**. Wyniki dotyczą lokalnego checkoutu. Historia wcześniejszych etapów: [archiwum QA](docs/archive/QA-2026-10-31_2026-11-01.md).
 
-## Kontrole wykonane po dodaniu sekcji opinii
+## Dane firmy i strony informacyjne — 11.11.2026
+
+| Kontrola | Wynik |
+| --- | --- |
+| `pnpm install --frozen-lockfile` | Sukces, bez zmian zależności |
+| `pnpm cf:check` | Sukces. Astro i TypeScript bez błędów i ostrzeżeń, cztery strony statyczne, weryfikacja danych firmy, linków i metadanych. Wrangler dry-run objął 96 zasobów. |
+| Lokalny Chrome w trybie headless | Obie podstrony wczytują się i mieszczą w widoku mobilnym 320 i 390 px oraz desktopowym 1440 px. Sprawdzono odnośniki w stopce i zrzuty widoku mobilnego i desktopowego. |
+| Widok głównej strony przy 320 px | Hero i galeria powodują przewijanie poziome. Ten sam wynik występuje w publicznej wersji sprzed zmian. |
+
+Pozostała weryfikacja faktycznych ustawień hostingu i rezerwacji oraz zachowania osadzonej mapy w sesjach z danymi Google. Adres do korespondencji przyjęto tymczasowo zgodnie z informacją właściciela.
+
+## Kontrole wykonane po dodaniu sekcji opinii — 01.11.2026
 
 | Kontrola | Wynik |
 | --- | --- |

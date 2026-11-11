@@ -32,10 +32,10 @@ Zależności: potwierdzenie danych przez właściciela, upoważnienie do publika
 
 | Praca | Pliki do aktualizacji / utworzenia | Dane wejściowe i odbiór |
 | --- | --- | --- |
-| Telefon, godziny i e-mail | Rozszerzyć typ w `src/data/business.ts`, `Contact.astro`, `Layout.astro`, `scripts/verify-build.mjs`, SPEC | Wyłącznie potwierdzone dane; `tel:`/`mailto:`, czytelne godziny i zgodny JSON-LD; verify nadal chroni przed niepotwierdzonymi polami |
+| Docelowy adres korespondencyjny i godziny | `src/data/business.ts`, UI, JSON-LD, verify, SPEC | Dane potwierdzone w rejestrze lub przez właściciela |
 | Autentyczny opis salonu i ewentualnie barberów | `About.astro`, `src/data/team.ts`, `Team.astro` | Tekst właściciela; bez dopisywania stażu, specjalizacji i nagród |
 | Oficjalna identyfikacja | Nowe pliki `src/assets/brand/*`, aktualizacja Header/Footer/CSS/favicon i generatora OG | Logo z prawem użycia, czytelność na mobile, kontrast i aktualna karta linku |
-| Informacja o prywatności | Po uzgodnieniu nowy `src/pages/polityka-prywatnosci.astro`, odpowiednia treść w `src/data/`, link w Footer | Rzeczywiste dane administratora oraz opis mapy i hostingu; brak szablonowych fikcyjnych danych |
+| Weryfikacja ustawień prywatności i rezerwacji | `src/pages/polityka-prywatnosci.astro`, `src/pages/regulamin.astro`, Cloudflare i Booksy | Potwierdzone ustawienia hostingu oraz treść i moment pokazania warunków klientowi w Booksy |
 
 Nie tworzyć pustego `contact.ts`, `privacy.ts` ani gotowego dokumentu z placeholderami na publicznej stronie. Wybrać finalną strukturę danych dopiero po otrzymaniu treści. Jeśli powstanie nowa strona, rozszerzyć kontrolę builda; obecne założenia dotyczą głównie strony głównej i 404.
 

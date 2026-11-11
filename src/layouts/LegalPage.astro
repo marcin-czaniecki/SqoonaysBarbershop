@@ -1,0 +1,32 @@
+---
+import Footer from '../components/Footer.astro';
+import Layout from './Layout.astro';
+import { business } from '../data/business';
+
+interface Props { heading: string; description: string; }
+const { heading, description } = Astro.props;
+---
+<Layout title={`${heading} | ${business.name}`} description={description}>
+  <main id="tresc" class="legal-page container" tabindex="-1">
+    <a class="text-link" href="/">← Strona główna</a>
+    <h1>{heading}</h1>
+    <slot />
+  </main>
+  <Footer />
+</Layout>
+<style>
+  .legal-page {
+    max-width: 50rem;
+    padding-block: clamp(2.5rem, 7vw, 5.5rem);
+    font-size: 1rem;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+  h1 { margin-block: 1.5rem 2.25rem; font-size: clamp(2.75rem, 8vw, 5rem); }
+  .legal-page :global(section + section) { margin-top: 2rem; }
+  .legal-page :global(h2) { margin-bottom: .6rem; font-size: clamp(1.65rem, 4vw, 2.2rem); }
+  .legal-page :global(p + p), .legal-page :global(p + ul) { margin-top: .8rem; }
+  .legal-page :global(ul) { padding-inline-start: 1.4rem; list-style: disc; }
+  .legal-page :global(li + li) { margin-top: .45rem; }
+  .legal-page :global(p a), .legal-page :global(li a) { text-decoration: underline; text-underline-offset: .2em; }
+</style>

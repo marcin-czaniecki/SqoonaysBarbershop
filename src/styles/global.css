@@ -124,7 +124,6 @@ details[open] > summary .when-open { display: inline-block; }
 details[open] > summary .when-closed { display: none; }
 .services-bottom { display: flex; justify-content: space-between; gap: 2rem; align-items: center; margin-top: 2rem; }
 .services-bottom p { font-size: .72rem; line-height: 1.9; }
-.services-bottom p span { color: #bfbab0; }
 
 /* People and photo slots. */
 .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
@@ -222,7 +221,9 @@ details[open] > summary .when-closed { display: none; }
 .contact-details { padding-top: .3rem; }
 .contact-grid > *, .contact-details { min-width: 0; }
 .contact-address { padding-bottom: 2rem; border-bottom: 1px solid #9c8055; }
-.contact-map { margin-block: 1.25rem .5rem; }
+.map-notice { margin-top: .8rem; font-size: .75rem; line-height: 1.55; }
+.map-notice a { text-decoration: underline; text-underline-offset: .2em; }
+.contact-map { margin-block: .75rem .5rem; }
 .map-viewport { position: relative; height: 280px; border: 1px solid #9c8055; background: var(--color-paper); }
 .map-placeholder { height: 100%; display: grid; place-content: center; justify-items: center; gap: .8rem; font-size: .75rem; }
 .contact-map iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; background: var(--color-paper); }
@@ -230,15 +231,17 @@ details[open] > summary .when-closed { display: none; }
 .contact-map figcaption { margin-top: .6rem; font-size: .65rem; line-height: 1.6; }
 .contact address { font-family: var(--font-display); font-style: normal; font-weight: 600; font-size: 2.5rem; line-height: 1.2; margin-block: 1.3rem .8rem; }
 .contact-social { padding-top: 2rem; display: flex; flex-direction: column; align-items: flex-start; }
-.contact-social .text-link { margin-top: .6rem; }
+.contact-channels { display: grid; gap: .5rem; margin-top: .65rem; font-size: .9rem; overflow-wrap: anywhere; }
+.contact-channels a { text-decoration: underline; text-underline-offset: .2em; }
 .contact-social > p { margin-top: .6rem; font-size: .7rem; line-height: 1.8; }
 .site-footer { background: var(--color-ink); color: var(--color-paper); }
 .footer-top { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-block: 3.5rem; }
-.footer-top > p { font-size: .72rem; color: #bfbab0; }
-.footer-bottom { border-top: 1px solid #4b4c45; padding-block: 1.5rem; display: flex; justify-content: space-between; gap: 2rem; color: #bfbab0; font-size: .56rem; }
-.footer-bottom > div { display: flex; gap: .8rem 1.8rem; flex-wrap: wrap; }
-.footer-bottom > div a { display: inline-flex; align-items: center; gap: .3rem; }
-.footer-bottom a:hover { color: var(--color-paper); text-decoration: underline; }
+.footer-business { display: grid; gap: .3rem; min-width: 0; color: #bfbab0; font-size: .82rem; font-style: normal; overflow-wrap: anywhere; }
+.footer-business a, .footer-bottom nav:first-of-type a { text-decoration: underline; text-underline-offset: .2em; }
+.footer-bottom { border-top: 1px solid #4b4c45; padding-block: 1.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem 2rem; color: #bfbab0; font-size: .75rem; }
+.footer-bottom nav { display: flex; gap: .75rem 1.25rem; flex-wrap: wrap; }
+.footer-bottom nav a { display: inline-flex; align-items: center; gap: .3rem; }
+.site-footer a:hover { color: var(--color-paper); }
 .mobile-booking { display: none; }
 
 @media (min-width: 1600px) { h1 { font-size: 8.9rem; } }
@@ -354,10 +357,8 @@ details[open] > summary .when-closed { display: none; }
   .contact-address { padding-bottom: 1.5rem; }
   .contact-social { padding-top: 1.5rem; }
   .footer-top { padding-block: 3rem 2rem; flex-wrap: wrap; gap: 2rem 1rem; }
-  .footer-top > p { display: none; }
   .footer-top .text-link { font-size: .65rem; gap: .6rem; }
   .footer-bottom { flex-wrap: wrap; gap: 1.5rem; padding-bottom: 2rem; }
-  .footer-bottom > p:last-child { display: none; }
   .mobile-booking { position: fixed; z-index: 20; bottom: 0; left: 0; right: 0; background: #191a18; color: var(--color-paper); padding: .7rem var(--gutter) calc(.7rem + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; justify-content: space-between; gap: .8rem; border-top: 1px solid #6c614e; }
   .mobile-booking > span { font-size: .6rem; }
   .mobile-booking .button { padding: .8rem 1rem; min-height: 50px; gap: .8rem; font-size: .7rem; }

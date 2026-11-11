@@ -5,16 +5,22 @@ import socialImage from '../data/social-image.json';
 import { Font } from 'astro:assets';
 import '../styles/global.css';
 
-interface Props { title?: string; noindex?: boolean; }
-const { title = business.seo.title, noindex = false } = Astro.props;
+interface Props { title?: string; description?: string; noindex?: boolean; }
+const { title = business.seo.title, description = business.seo.description, noindex = false } = Astro.props;
 const site = Astro.site;
 const canonical = site && !noindex ? new URL(Astro.url.pathname, site).href : undefined;
-const sharingTitle = noindex ? title : social.title;
+const isHome = Astro.url.pathname === '/';
+const sharingTitle = isHome ? social.title : title;
+const sharingDescription = isHome ? social.description : description;
 const imageUrl = site ? new URL(socialImage.path, site).href : socialImage.path;
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'HairSalon',
   name: business.name,
+  legalName: business.legalName,
+  telephone: business.contact.phone,
+  email: business.contact.email,
+  taxID: business.taxId,
   ...(site ? { url: site.href, '@id': new URL('#salon', site).href } : {}),
   address: {
     '@type': 'PostalAddress',
@@ -35,7 +41,7 @@ const structuredData = {
     <Font cssVariable="--font-barlow" preload />
     <Font cssVariable="--font-manrope" preload />
     <title>{title}</title>
-    <meta name="description" content={business.seo.description} />
+    <meta name="description" content={description} />
     <meta name="theme-color" content="#f1eee8" />
     <meta name="robots" content={site && !noindex ? 'index, follow' : 'noindex, nofollow'} />
     {canonical && <link rel="canonical" href={canonical} />}
@@ -45,7 +51,7 @@ const structuredData = {
     <meta property="og:locale" content="pl_PL" />
     <meta property="og:site_name" content={business.name} />
     <meta property="og:title" content={sharingTitle} />
-    <meta property="og:description" content={social.description} />
+    <meta property="og:description" content={sharingDescription} />
     {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={imageUrl} />
     {site && <meta property="og:image:secure_url" content={imageUrl} />}
@@ -55,10 +61,10 @@ const structuredData = {
     <meta property="og:image:alt" content={social.imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={sharingTitle} />
-    <meta name="twitter:description" content={social.description} />
+    <meta name="twitter:description" content={sharingDescription} />
     <meta name="twitter:image" content={imageUrl} />
     <meta name="twitter:image:alt" content={social.imageAlt} />
-    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />}
+    {isHome && !noindex && <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />}
   </head>
   <body id="start"><a href="#tresc" class="skip-link">Przejdź do treści</a><slot /></body>
 </html>
